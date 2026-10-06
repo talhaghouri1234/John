@@ -5,13 +5,15 @@ import User from '../models/User.js';
 import Category from '../models/Category.js';
 import { sampleUsers } from './users.js';
 import { sampleCategories } from './categories.js';
+import { parseSeedOptions } from './options.js';
 
 async function run() {
-  if (env.NODE_ENV === 'production') throw new Error('Demo seed is disabled in production');
+  const { destroy } = parseSeedOptions(process.argv.slice(2), env.NODE_ENV);
   await connectDB();
   await Promise.all([User.init(), Category.init()]);
   await Category.deleteMany({});
   await User.deleteMany({});
+  if (destroy) { console.log('Users and categories cleared.'); return; }
   // create() runs password hashing middleware, unlike insertMany().
   const [admin] = await User.create(sampleUsers);
   await Category.create(sampleCategories.map((category) => ({ ...category, createdBy: admin._id })));
