@@ -36,7 +36,7 @@ export async function refresh(req, res) {
   const user = await User.findOneAndUpdate(
     { _id: payload.sub, isActive: true, refreshTokenHash: hashToken(token) },
     { $set: { refreshTokenHash: hashToken(tokens.refreshToken) } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   if (!user) { clearCookies(res); throw new ApiError(401, 'Session expired'); }
   setCookies(res, tokens);

@@ -71,3 +71,16 @@ Set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` to different random values of
 at least 32 characters. Keep `CLIENT_URL=http://localhost:5173` for local use.
 Run scripts from the root or their workspace so the server loads `server/.env`.
 Never commit `.env` or paste your connection string into tracked files.
+
+## Backend tests
+
+`npm run test --workspace server` runs Jest and Supertest against temporary
+databases managed by `mongodb-memory-server`. Test configuration replaces the
+Atlas URI before application imports. On Windows, an installed MongoDB binary
+is reused automatically; otherwise the first run downloads one. You can also
+set `MONGOMS_SYSTEM_BINARY` to a compatible `mongod` executable. No existing
+database service or data directory is used. The first download may take several
+minutes; subsequent runs use the cache.
+
+Use `npm run test:coverage --workspace server` for a coverage report or
+`npm run test:watch --workspace server` during development.
