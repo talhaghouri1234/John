@@ -11,5 +11,9 @@
     "lint": "eslint ."
   },
   "dependencies": { "react": "^19.1.0", "react-dom": "^19.1.0" },
-  "devDependencies": { "vite": "^7.0.0", "@vitejs/plugin-react": "^4.7.0", "vitest": "^3.2.0" }
+  "devDependencies": {
+    "vite": "^7.0.0", "@vitejs/plugin-react": "^4.7.0", "vitest": "^3.2.0",
+    "eslint": "^9.0.0", "@eslint/js": "^9.0.0", "globals": "^16.0.0", "prettier": "^3.0.0",
+    "eslint-plugin-react": "^7.37.0", "eslint-plugin-react-hooks": "^5.2.0"
+  }
 }
