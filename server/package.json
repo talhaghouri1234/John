@@ -3,5 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test", "lint": "eslint ." }
+  "scripts": { "test": "node --test", "lint": "eslint ." },
+  "devDependencies": { "eslint": "^9.0.0", "@eslint/js": "^9.0.0", "globals": "^16.0.0", "prettier": "^3.0.0" }
 }
