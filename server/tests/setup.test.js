@@ -97,3 +97,30 @@ test('user list validation bounds pagination and escapes searches literally', as
   assert.equal(new RegExp(escapeRegex('a.*')).test('abc'), false);
   assert.equal(new RegExp(escapeRegex('a.*')).test('a.*'), true);
 });
+
+test('category slug generation follows name changes', async () => {
+  const { default: Category } = await import('../src/models/Category.js');
+  const category = new Category({ name: 'Home & Décor', createdBy: '507f1f77bcf86cd799439011' });
+  await category.validate();
+  assert.equal(category.slug, 'home-decor');
+  category.name = 'New Books';
+  await category.validate();
+  assert.equal(category.slug, 'new-books');
+});
+
+test('category validation preserves omitted fields in partial updates', async () => {
+  const { updateCategorySchema, createCategorySchema, listCategoriesSchema } = await import('../src/validators/category.js');
+  const params = { id: '507f1f77bcf86cd799439011' };
+  assert.deepEqual(updateCategorySchema.parse({ params, body: { name: 'Books' } }).body, { name: 'Books' });
+  assert.equal(updateCategorySchema.safeParse({ params, body: {} }).success, false);
+  assert.equal(createCategorySchema.safeParse({ body: { name: 'Books', image: 'javascript:alert(1)' } }).success, false);
+  assert.equal(listCategoriesSchema.parse({ query: { isActive: 'false' } }).query.isActive, false);
+  assert.equal(listCategoriesSchema.safeParse({ query: { sort: 'password' } }).success, false);
+});
+
+test('all category routes require a session', async () => {
+  assert.equal((await request(app).get('/api/categories')).status, 401);
+  assert.equal((await request(app).post('/api/categories').send({ name: 'Books' })).status, 401);
+  assert.equal((await request(app).put('/api/categories/507f1f77bcf86cd799439011').send({ name: 'Books' })).status, 401);
+  assert.equal((await request(app).delete('/api/categories/507f1f77bcf86cd799439011')).status, 401);
+});
