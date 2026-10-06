@@ -50,3 +50,7 @@ export async function logout(req, res) {
   clearCookies(res);
   res.json({ success: true, message: 'Signed out' });
 }
+
+export function getMe(req, res) {
+  res.json({ success: true, message: 'Current user', user: req.user });
+}
