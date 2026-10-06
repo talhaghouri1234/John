@@ -44,3 +44,18 @@ and `page`, `limit`, and `search` query parameters. Use `PATCH /:id/role` with
 `{ "role": "admin" }` or `{ "role": "user" }`, `PATCH /:id/active` with
 `{ "isActive": false }`, and `DELETE /:id`. Administrators cannot modify their
 own access or delete themselves. Public registration only accepts user accounts.
+
+## Seed data
+
+Run `npm run seed` from the root. This **deletes all existing users and categories**
+in the database selected by `server/.env`, then inserts three accounts and ten
+categories. `npm run seed:destroy` only deletes those collections' documents.
+These commands are disabled when `NODE_ENV=production`.
+
+| Role | Email | Demo password |
+| --- | --- | --- |
+| Admin | admin@example.com | Admin@123 |
+| User | user1@example.com | User@123 |
+| User | user2@example.com | User@123 |
+
+These are public demonstration credentials, not production accounts.
