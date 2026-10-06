@@ -68,3 +68,32 @@ test('user serialization excludes credentials', async () => {
   assert.equal(user.toJSON().password, undefined);
   assert.equal(user.toJSON().refreshTokenHash, undefined);
 });
+
+test('role guard rejects users and accepts admins', async () => {
+  const { authorize } = await import('../src/middleware/role.js');
+  let error;
+  authorize('admin')({ user: { role: 'user' } }, {}, (err) => { error = err; });
+  assert.equal(error.statusCode, 403);
+  authorize('admin')({ user: { role: 'admin' } }, {}, (err) => { error = err; });
+  assert.equal(error, undefined);
+});
+
+test('user management requires authentication', async () => {
+  assert.equal((await request(app).get('/api/users')).status, 401);
+});
+
+test('admin cannot revoke their own access', async () => {
+  const { updateRole, updateActive, deleteUser } = await import('../src/controllers/user.js');
+  for (const controller of [updateRole, updateActive, deleteUser]) {
+    await assert.rejects(controller({ user: { _id: 'same-id' }, params: { id: 'same-id' } }, {}), { statusCode: 400 });
+  }
+});
+
+test('user list validation bounds pagination and escapes searches literally', async () => {
+  const { listUsersSchema } = await import('../src/validators/user.js');
+  const { default: escapeRegex } = await import('../src/utils/escapeRegex.js');
+  assert.equal(listUsersSchema.safeParse({ query: { page: '-1' } }).success, false);
+  assert.equal(listUsersSchema.safeParse({ query: { limit: '101' } }).success, false);
+  assert.equal(new RegExp(escapeRegex('a.*')).test('abc'), false);
+  assert.equal(new RegExp(escapeRegex('a.*')).test('a.*'), true);
+});
