@@ -13,3 +13,8 @@ export async function listCategories(req, res) {
   ]);
   res.json({ success: true, message: 'Categories retrieved', categories, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
 }
+
+export async function createCategory(req, res) {
+  const category = await Category.create({ ...req.body, createdBy: req.user._id });
+  res.status(201).json({ success: true, message: 'Category created', category });
+}
