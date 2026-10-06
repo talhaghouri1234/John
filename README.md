@@ -36,3 +36,11 @@ audit reports upstream issues in the requested Jest and Nodemon tooling
 (`sprintf-js` and `braces`). npm's suggested major downgrades are not applied.
 Recheck with `npm audit` when updating dependencies. Development tools should
 only run in a trusted development environment.
+
+## User administration
+
+All `/api/users` routes require an active admin session. List users with `GET /`
+and `page`, `limit`, and `search` query parameters. Use `PATCH /:id/role` with
+`{ "role": "admin" }` or `{ "role": "user" }`, `PATCH /:id/active` with
+`{ "isActive": false }`, and `DELETE /:id`. Administrators cannot modify their
+own access or delete themselves. Public registration only accepts user accounts.
