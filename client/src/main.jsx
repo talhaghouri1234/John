@@ -7,5 +7,11 @@ import { queryClient } from './api/queryClient.js';
 import './styles.css';
 
 createRoot(document.getElementById('root')).render(
-  <React.StrictMode><QueryClientProvider client={queryClient}><BrowserRouter><App /></BrowserRouter></QueryClientProvider></React.StrictMode>,
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>,
 );

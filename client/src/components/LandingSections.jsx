@@ -1,0 +1,77 @@
+import { Link } from 'react-router-dom';
+import { FolderTree, Users, ShieldCheck, ArrowUpRight } from 'lucide-react';
+import ScrollReveal from './ScrollReveal.jsx';
+
+export default function LandingSections() {
+  return (
+    <>
+      <section className="landing-features">
+        <ScrollReveal>
+          <div className="feature-heading">
+            <div>
+              <p className="eyebrow">Thoughtfully simple</p>
+              <h2>
+                Good structure.
+                <br />
+                Great possibilities.
+              </h2>
+            </div>
+            <p>
+              Just the right tools to bring a little order
+              <br />
+              to your everyday. Nothing in your way.
+            </p>
+          </div>
+        </ScrollReveal>
+        <div className="feature-grid">
+          {[
+            [
+              FolderTree,
+              '01',
+              'Everything, organized.',
+              'Create clear categories that make sense for your work. Less searching, more doing.',
+            ],
+            [
+              Users,
+              '02',
+              'Better, together.',
+              'A shared home for your team, with the right access for every person.',
+            ],
+            [
+              ShieldCheck,
+              '03',
+              'Confidence, built in.',
+              'Secure sessions and thoughtful permissions keep your workspace in good hands.',
+            ],
+          ].map(([Icon, number, title, text]) => (
+            <ScrollReveal key={number}>
+              <article>
+                <div>
+                  <Icon size={27} strokeWidth={1.2} />
+                  <span>{number}</span>
+                </div>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </article>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+      <ScrollReveal>
+        <section className="landing-cta">
+          <p className="eyebrow">Your next chapter</p>
+          <h2>
+            Make space for
+            <br />
+            <em>what matters.</em>
+          </h2>
+          <p>A fresh workspace. A clearer perspective. Start here.</p>
+          <Link className="button" to="/register">
+            Create your account <ArrowUpRight size={17} />
+          </Link>
+          <span className="cta-spark">✳</span>
+        </section>
+      </ScrollReveal>
+    </>
+  );
+}

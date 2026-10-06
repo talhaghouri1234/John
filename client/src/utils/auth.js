@@ -1,1 +1,2 @@
-export const dashboardPath = (user) => user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
+export const dashboardPath = (user) =>
+  user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
