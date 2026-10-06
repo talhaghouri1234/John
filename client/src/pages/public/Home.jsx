@@ -1,2 +1,3 @@
 import Hero from '../../components/Hero.jsx';
-export default function Home() { return <main className="landing"><Hero /></main>; }
+import LandingSections from '../../components/LandingSections.jsx';
+export default function Home() { return <main className="landing"><Hero /><LandingSections /></main>; }
