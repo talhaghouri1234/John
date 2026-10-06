@@ -1,0 +1,16 @@
+{
+  "name": "mern-starter-kit",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["server", "client"],
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "install:all": "npm install",
+    "seed": "npm run seed --workspace server",
+    "seed:destroy": "npm run seed:destroy --workspace server",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "build": "npm run build --workspace client"
+  }
+}
