@@ -1,5 +1,7 @@
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext.jsx';
+import AppRoutes from './routes/AppRoutes.jsx';
 
 export default function App() {
-  return <><Toaster position="top-right" /><main><h1>MERN Workspace</h1></main></>;
+  return <AuthProvider><Toaster position="top-right" /><AppRoutes /></AuthProvider>;
 }
