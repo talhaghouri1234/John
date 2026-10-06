@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import PublicLayout from '../layouts/PublicLayout.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import RoleRoute from './RoleRoute.jsx';
@@ -11,7 +11,11 @@ const Register = lazy(() => import('../pages/public/Register.jsx'));
 const NotFound = lazy(() => import('../pages/public/NotFound.jsx'));
 const Unauthorized = lazy(() => import('../pages/public/Unauthorized.jsx'));
 const SessionHome = lazy(() => import('../pages/SessionHome.jsx'));
+const AdminLayout = lazy(() => import('../layouts/AdminLayout.jsx'));
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard.jsx'));
+const ManageCategories = lazy(() => import('../pages/admin/ManageCategories.jsx'));
+const ManageUsers = lazy(() => import('../pages/admin/ManageUsers.jsx'));
 
 export default function AppRoutes() {
-  return <Suspense fallback={<Loader />}><Routes><Route element={<PublicLayout />}><Route index element={<Home />} /><Route path="login" element={<Login />} /><Route path="register" element={<Register />} /><Route path="unauthorized" element={<Unauthorized />} /><Route element={<ProtectedRoute />}><Route element={<RoleRoute role="admin" />}><Route path="admin/dashboard" element={<SessionHome />} /></Route><Route element={<RoleRoute role="user" />}><Route path="user/dashboard" element={<SessionHome />} /></Route></Route><Route path="*" element={<NotFound />} /></Route></Routes></Suspense>;
+  return <Suspense fallback={<Loader />}><Routes><Route element={<PublicLayout />}><Route index element={<Home />} /><Route path="login" element={<Login />} /><Route path="register" element={<Register />} /><Route path="unauthorized" element={<Unauthorized />} /><Route path="*" element={<NotFound />} /></Route><Route element={<ProtectedRoute />}><Route element={<RoleRoute role="admin" />}><Route path="admin" element={<AdminLayout />}><Route index element={<Navigate to="dashboard" replace />} /><Route path="dashboard" element={<AdminDashboard />} /><Route path="categories" element={<ManageCategories />} /><Route path="users" element={<ManageUsers />} /><Route path="*" element={<NotFound />} /></Route></Route><Route element={<RoleRoute role="user" />}><Route path="user/dashboard" element={<SessionHome />} /></Route></Route></Routes></Suspense>;
 }
