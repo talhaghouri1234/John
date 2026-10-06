@@ -28,3 +28,11 @@ mern-starter-kit/
 
 Run `npm run install:all` from the repository root to install both workspaces.
 `npm run lint` checks both applications; `npm run build` builds the React client.
+
+## Dependency audit
+
+On 2026-10-06, `npm audit --omit=dev` reported zero vulnerabilities. The full
+audit reports upstream issues in the requested Jest and Nodemon tooling
+(`sprintf-js` and `braces`). npm's suggested major downgrades are not applied.
+Recheck with `npm audit` when updating dependencies. Development tools should
+only run in a trusted development environment.
