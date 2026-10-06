@@ -27,3 +27,9 @@ export async function updateCategory(req, res) {
   await category.save();
   res.json({ success: true, message: 'Category updated', category });
 }
+
+export async function deleteCategory(req, res) {
+  const category = await Category.findByIdAndDelete(req.params.id);
+  if (!category) throw new ApiError(404, 'Category not found');
+  res.json({ success: true, message: 'Category deleted' });
+}
