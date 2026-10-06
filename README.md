@@ -59,3 +59,15 @@ These commands are disabled when `NODE_ENV=production`.
 | User | user2@example.com | User@123 |
 
 These are public demonstration credentials, not production accounts.
+
+## Local environment
+
+Copy `server/.env.example` to `server/.env`. Paste your Atlas connection string
+into `MONGO_URI`, including the intended database name. URL-encode special
+characters in the database password and allow your development machine in
+Atlas network access settings. Use a separate development database for seeding.
+
+Set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` to different random values of
+at least 32 characters. Keep `CLIENT_URL=http://localhost:5173` for local use.
+Run scripts from the root or their workspace so the server loads `server/.env`.
+Never commit `.env` or paste your connection string into tracked files.
