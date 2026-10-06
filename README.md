@@ -12,3 +12,19 @@ Requires Node.js 24 LTS and npm 11. Setup and API documentation will be added
 alongside the corresponding modules.
 
 Local environment files and dependencies are excluded from version control.
+
+## Folder structure
+
+```text
+mern-starter-kit/
+  package.json          npm workspaces and combined commands
+  server/
+    src/                Express API, database configuration, models and middleware
+    tests/              API integration tests using an isolated MongoDB instance
+  client/
+    src/                React application, pages, layouts, components and hooks
+    index.html          Vite HTML entry
+```
+
+Run `npm run install:all` from the repository root to install both workspaces.
+`npm run lint` checks both applications; `npm run build` builds the React client.
