@@ -2,6 +2,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 .landing {
+  overflow-x: clip;
   max-width: 1280px;
   margin: auto;
 }
@@ -318,7 +319,7 @@
     opacity: 0.35;
   }
 }
-.dark {
+:root.dark {
   --surface: #1b2b24;
   --ink: #e5eade;
   --muted: #a5b1a3;
