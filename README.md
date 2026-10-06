@@ -44,3 +44,30 @@ and `page`, `limit`, and `search` query parameters. Use `PATCH /:id/role` with
 `{ "role": "admin" }` or `{ "role": "user" }`, `PATCH /:id/active` with
 `{ "isActive": false }`, and `DELETE /:id`. Administrators cannot modify their
 own access or delete themselves. Public registration only accepts user accounts.
+
+## Seed data
+
+Run `npm run seed` from the root. This **deletes all existing users and categories**
+in the database selected by `server/.env`, then inserts three accounts and ten
+categories. `npm run seed:destroy` only deletes those collections' documents.
+These commands are disabled when `NODE_ENV=production`.
+
+| Role | Email | Demo password |
+| --- | --- | --- |
+| Admin | admin@example.com | Admin@123 |
+| User | user1@example.com | User@123 |
+| User | user2@example.com | User@123 |
+
+These are public demonstration credentials, not production accounts.
+
+## Local environment
+
+Copy `server/.env.example` to `server/.env`. Paste your Atlas connection string
+into `MONGO_URI`, including the intended database name. URL-encode special
+characters in the database password and allow your development machine in
+Atlas network access settings. Use a separate development database for seeding.
+
+Set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` to different random values of
+at least 32 characters. Keep `CLIENT_URL=http://localhost:5173` for local use.
+Run scripts from the root or their workspace so the server loads `server/.env`.
+Never commit `.env` or paste your connection string into tracked files.
