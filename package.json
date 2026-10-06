@@ -5,6 +5,7 @@
   "workspaces": ["server", "client"],
   "engines": { "node": ">=24 <25" },
   "scripts": {
+    "dev": "concurrently -k -n server,client \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
     "install:all": "npm install",
     "seed": "npm run seed --workspace server",
     "seed:destroy": "npm run seed:destroy --workspace server",
@@ -12,5 +13,6 @@
     "lint": "npm run lint --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
     "build": "npm run build --workspace client"
-  }
+  },
+  "devDependencies": { "concurrently": "^9.2.0" }
 }
