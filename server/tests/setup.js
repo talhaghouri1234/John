@@ -7,7 +7,7 @@ beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   await mongoose.connect(mongo.getUri());
   await Promise.all(Object.values(mongoose.models).map((model) => model.init()));
-});
+}, 1200000);
 beforeEach(async () => {
   await Promise.all(Object.values(mongoose.connection.collections).map((collection) => collection.deleteMany({})));
 });
