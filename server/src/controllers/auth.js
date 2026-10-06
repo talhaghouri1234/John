@@ -16,3 +16,12 @@ export async function register(req, res) {
   await startSession(user, res);
   res.status(201).json({ success: true, message: 'Account created', user });
 }
+
+export async function login(req, res) {
+  const user = await User.findOne({ email: req.body.email }).select('+password');
+  if (!user || !user.isActive || !(await user.comparePassword(req.body.password))) {
+    throw new ApiError(401, 'Invalid email or password');
+  }
+  await startSession(user, res);
+  res.json({ success: true, message: 'Signed in', user });
+}
