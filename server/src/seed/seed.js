@@ -4,6 +4,7 @@ import { env } from '../config/env.js';
 import User from '../models/User.js';
 import Category from '../models/Category.js';
 import { sampleUsers } from './users.js';
+import { sampleCategories } from './categories.js';
 
 async function run() {
   if (env.NODE_ENV === 'production') throw new Error('Demo seed is disabled in production');
@@ -12,8 +13,9 @@ async function run() {
   await Category.deleteMany({});
   await User.deleteMany({});
   // create() runs password hashing middleware, unlike insertMany().
-  await User.create(sampleUsers);
-  console.log('Seeded 3 demonstration accounts.');
+  const [admin] = await User.create(sampleUsers);
+  await Category.create(sampleCategories.map((category) => ({ ...category, createdBy: admin._id })));
+  console.log('Seeded 3 demonstration accounts and 10 categories.');
   for (const user of sampleUsers) console.log(`${user.role}: ${user.email} / ${user.password}`);
 }
 
