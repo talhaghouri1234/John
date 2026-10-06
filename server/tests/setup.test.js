@@ -27,3 +27,44 @@ test('malformed JSON produces a safe client error', async () => {
   assert.equal(response.status, 400);
   assert.equal(response.body.message, 'Invalid JSON body');
 });
+
+test('auth rejects invalid registration and role injection', async () => {
+  for (const body of [{}, { name: 'Test User', email: 'test@example.com', password: 'Password123', role: 'admin' }]) {
+    const response = await request(app).post('/api/auth/register').send(body);
+    assert.equal(response.status, 400);
+    assert.equal(response.body.success, false);
+  }
+});
+
+test('protected and refresh routes reject missing cookies', async () => {
+  assert.equal((await request(app).get('/api/auth/me')).status, 401);
+  assert.equal((await request(app).post('/api/auth/refresh')).status, 401);
+});
+
+test('logout clears cookies without a session', async () => {
+  const response = await request(app).post('/api/auth/logout');
+  assert.equal(response.status, 200);
+  assert.equal(response.headers['set-cookie'].length, 2);
+});
+
+test('browser mutations from another origin are forbidden', async () => {
+  const response = await request(app).post('/api/auth/logout').set('Origin', 'https://untrusted.example');
+  assert.equal(response.status, 403);
+});
+
+test('refresh tokens are unique and cannot be used as access tokens', async () => {
+  const { generateTokens, verifyToken } = await import('../src/utils/generateToken.js');
+  const user = { _id: '507f1f77bcf86cd799439011' };
+  const first = generateTokens(user);
+  const second = generateTokens(user);
+  assert.notEqual(first.refreshToken, second.refreshToken);
+  assert.equal(verifyToken(first.accessToken, 'access').sub, user._id);
+  assert.throws(() => verifyToken(first.refreshToken, 'access'));
+});
+
+test('user serialization excludes credentials', async () => {
+  const { default: User } = await import('../src/models/User.js');
+  const user = new User({ name: 'Test', email: 'test@example.com', password: 'secret', refreshTokenHash: 'hash' });
+  assert.equal(user.toJSON().password, undefined);
+  assert.equal(user.toJSON().refreshTokenHash, undefined);
+});
