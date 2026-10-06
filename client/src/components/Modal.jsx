@@ -10,5 +10,30 @@ export default function Modal({ title, onClose, children, busy = false }) {
     element.showModal();
     return () => element.close();
   }, []);
-  return <dialog ref={dialog} className="modal" aria-labelledby={titleId} onCancel={(event) => { event.preventDefault(); if (!busy) onClose(); }}><motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .18 }}><div className="modal-heading"><h2 id={titleId}>{title}</h2><button className="icon-button" aria-label="Close dialog" onClick={onClose} disabled={busy}><X size={18} /></button></div>{children}</motion.div></dialog>;
+  return (
+    <dialog
+      ref={dialog}
+      className="modal"
+      aria-labelledby={titleId}
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!busy) onClose();
+      }}
+    >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.18 }}>
+        <div className="modal-heading">
+          <h2 id={titleId}>{title}</h2>
+          <button
+            className="icon-button"
+            aria-label="Close dialog"
+            onClick={onClose}
+            disabled={busy}
+          >
+            <X size={18} />
+          </button>
+        </div>
+        {children}
+      </motion.div>
+    </dialog>
+  );
 }

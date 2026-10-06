@@ -13,5 +13,15 @@ export default function App() {
     const lenis = new Lenis({ autoRaf: true, anchors: true });
     return () => lenis.destroy();
   }, []);
-  return <MotionConfig reducedMotion="user"><AuthProvider><Toaster position="top-right" /><PageTransition><AppRoutes /></PageTransition><ThemeToggle /></AuthProvider></MotionConfig>;
+  return (
+    <MotionConfig reducedMotion="user">
+      <AuthProvider>
+        <Toaster position="top-right" />
+        <PageTransition>
+          <AppRoutes />
+        </PageTransition>
+        <ThemeToggle />
+      </AuthProvider>
+    </MotionConfig>
+  );
 }
