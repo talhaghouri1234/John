@@ -10,6 +10,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/tests/setup.js'],
     environmentOptions: { jsdom: { url: 'http://localhost/' } },
-    coverage: { provider: 'v8', include: ['src/**/*.{js,jsx}'], exclude: ['src/tests/**', 'src/main.jsx'] },
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/tests/**', 'src/main.jsx'],
+    },
   },
 });

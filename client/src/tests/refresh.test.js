@@ -4,10 +4,18 @@ import { server } from './server.js';
 import { api } from '../api/axios.js';
 
 test('concurrent unauthorized requests share a single refresh then retry', async () => {
-  let refreshed = false, calls = 0;
+  let refreshed = false,
+    calls = 0;
   server.use(
-    http.get('*/api/probe', () => HttpResponse.json({ ok: refreshed }, { status: refreshed ? 200 : 401 })),
-    http.post('*/api/auth/refresh', async () => { calls++; await delay(30); refreshed = true; return HttpResponse.json({ success: true }); }),
+    http.get('*/api/probe', () =>
+      HttpResponse.json({ ok: refreshed }, { status: refreshed ? 200 : 401 }),
+    ),
+    http.post('*/api/auth/refresh', async () => {
+      calls++;
+      await delay(30);
+      refreshed = true;
+      return HttpResponse.json({ success: true });
+    }),
   );
   const responses = await Promise.all([api.get('/probe'), api.get('/probe')]);
   expect(responses.every((response) => response.status === 200)).toBe(true);
