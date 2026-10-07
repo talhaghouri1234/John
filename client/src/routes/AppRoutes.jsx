@@ -18,6 +18,8 @@ const AdminLayout = lazy(() => import('../layouts/AdminLayout.jsx'));
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard.jsx'));
 const ManageCategories = lazy(() => import('../pages/admin/ManageCategories.jsx'));
 const ManageUsers = lazy(() => import('../pages/admin/ManageUsers.jsx'));
+const ManageMedia = lazy(() => import('../pages/admin/ManageMedia.jsx'));
+const BrowseMedia = lazy(() => import('../pages/user/BrowseMedia.jsx'));
 
 export default function AppRoutes() {
   return (
@@ -37,6 +39,7 @@ export default function AppRoutes() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="categories" element={<ManageCategories />} />
               <Route path="users" element={<ManageUsers />} />
+              <Route path="media" element={<ManageMedia />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
@@ -46,6 +49,7 @@ export default function AppRoutes() {
               <Route path="dashboard" element={<UserDashboard />} />
               <Route path="categories" element={<BrowseCategories />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="media" element={<BrowseMedia />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

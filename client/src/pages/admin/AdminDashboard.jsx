@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import MediaLibrary from '../../components/MediaLibrary.jsx';
 import { Users, FolderOpen, CircleCheck, Archive, ArrowUpRight } from 'lucide-react';
 import { userApi } from '../../api/user.api.js';
 import { useCategories } from '../../hooks/useCategories.js';
@@ -76,6 +77,11 @@ export default function AdminDashboard() {
         </div>
         <CategoryTable categories={categories.data.categories} />
       </section>
+      <div className="section-label media-section-heading">
+        <h2>Shared media</h2>
+        <Link to="/admin/media">Manage media ↗</Link>
+      </div>
+      <MediaLibrary compact />
     </>
   );
 }

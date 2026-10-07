@@ -1,4 +1,5 @@
 export default function errorHandler(err, _req, res, _next) {
+  if (res.headersSent) return _next(err);
   let status = err.statusCode || err.status || 500;
   let message = status < 500 ? err.message : 'Internal server error';
   if (err.code === 11000) { status = 409; message = 'A record with that value already exists'; }

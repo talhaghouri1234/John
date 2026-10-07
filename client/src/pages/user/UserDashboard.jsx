@@ -5,6 +5,7 @@ import { useCategories } from '../../hooks/useCategories.js';
 import CategoryCard from '../../components/CategoryCard.jsx';
 import Loader from '../../components/Loader.jsx';
 import ErrorState from '../../components/ErrorState.jsx';
+import MediaLibrary from '../../components/MediaLibrary.jsx';
 
 export default function UserDashboard() {
   const { user } = useAuth();
@@ -60,6 +61,11 @@ export default function UserDashboard() {
       ) : (
         <div className="card empty">There are no active categories yet. Check back soon.</div>
       )}
+      <div className="section-label media-section-heading">
+        <h2>Shared media</h2>
+        <Link to="/user/media">Browse all ↗</Link>
+      </div>
+      <MediaLibrary compact />
     </>
   );
 }
