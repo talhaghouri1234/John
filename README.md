@@ -68,3 +68,34 @@ Both commands refuse to run with `NODE_ENV=production`.
 These credentials are public demo fixtures. Do not use them for production accounts.
 The seed creates Electronics, Fashion, Books, Home, Sports, Toys, Beauty, Grocery,
 Automotive, and Health. It prints account credentials after successful creation.
+
+## Commands and tests
+
+| Command from root | Purpose |
+| --- | --- |
+| `npm run install:all` | Install both workspaces and root tooling |
+| `npm run dev` | Run Express and Vite together; Ctrl+C stops both |
+| `npm run seed` / `npm run seed:destroy` | Reset demo data / clear data |
+| `npm test` | Run backend and frontend test suites |
+| `npm run test:coverage` | Run both coverage reports |
+| `npm run lint` | Lint both applications |
+| `npm run build` | Build the client into `client/dist` |
+| `npm run start --workspace server` | Start the API without Nodemon |
+| `npm run test:watch --workspace server` | Watch backend tests |
+| `npm run test:watch --workspace client` | Watch frontend tests |
+
+Backend tests use Jest, Supertest, and `mongodb-memory-server`. The test environment
+overrides `MONGO_URI` before importing the app and only connects to a disposable
+MongoDB instance. It never uses Atlas or an existing database service. On Windows,
+tests reuse an installed `mongod` binary automatically. Otherwise, the first run
+downloads one; allow time and network access. Set `MONGOMS_SYSTEM_BINARY` to use a
+compatible executable explicitly. Each suite uses a fresh temporary data directory.
+
+Frontend tests use Vitest, React Testing Library, jsdom, and MSW. They cover login
+validation and redirects for both roles, route guards, category forms/tables, and
+refresh concurrency. HTTP requests are mocked. Coverage reports are written under
+each workspace's ignored `coverage/` directory. Tests cover behavior rather than
+claiming exhaustive coverage of every presentation component.
+
+Both workspaces include ESLint and Prettier configuration. Format files with
+`npx prettier --write <path>` from the appropriate workspace.
