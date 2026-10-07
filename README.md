@@ -192,3 +192,41 @@ For example, to add projects:
 
 Client guards improve navigation but never replace server authorization. Use the
 existing category feature as a complete reference from model through UI.
+
+## Deployment and operational notes
+
+- Build with `npm run build`; serve `client/dist` through a static host or reverse
+  proxy with a fallback to `index.html` for client routes. The Express API does not
+  serve the frontend build. Route `/api` to the API process on the same public origin.
+- Run the API with `NODE_ENV=production`, a production database, strong independent
+  JWT secrets, and `CLIENT_URL` set to the exact HTTPS frontend origin. Production
+  cookies are `Secure`, `HttpOnly`, and `SameSite=Lax`; HTTPS is required. Prefer the
+  same public origin for frontend and API. Cross-site cookie deployment is not configured.
+- Registration and login issue short-lived access tokens and rotating refresh tokens.
+  Only the refresh-token hash is stored. Each account has one current refresh session;
+  signing in again replaces it. Logout revokes the matching refresh session and clears
+  browser cookies. A copied access token remains usable until its short expiry unless
+  the account is disabled/deleted; protection reloads the current user on every request.
+- Helmet, credentialed CORS, input limits, Mongo sanitization, strict validation, and
+  browser-origin checks protect requests. Authentication routes are rate-limited.
+  The included limiter uses memory for a single API process. For multiple instances,
+  configure a shared store and a narrowly scoped trusted-proxy setting for your deployment.
+- Keep database backups and credentials outside the repository. Never run demo seed
+  against production. Review and update dependencies regularly with `npm audit`.
+- The server connects before listening and shuts down HTTP and MongoDB on termination.
+  `/api/health` reports HTTP service liveness; it is not a database readiness probe.
+
+## Troubleshooting
+
+- **Invalid environment:** check every named variable; secrets must differ and have
+  at least 32 characters. Values are deliberately omitted from diagnostics.
+- **Database connection failed:** check Atlas credentials, network allowlist, database
+  name, and DNS/connectivity. Seeding errors also omit connection values.
+- **Origin not allowed:** open `http://localhost:5173`, or deliberately update
+  `CLIENT_URL` to match the browser origin and restart the API.
+- **Port occupied:** stop the existing process or change API `PORT` and the Vite proxy
+  together. Vite uses `strictPort` so it cannot silently change the allowed origin.
+- **First backend test run is slow:** MongoDB's binary download can be large. Use an
+  installed binary via `MONGOMS_SYSTEM_BINARY` or let the download finish and cache.
+- **Test runner cannot open localhost sockets or temporary files:** run tests in an
+  environment that permits local processes and loopback connections.
