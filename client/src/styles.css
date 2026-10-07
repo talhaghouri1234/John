@@ -1,6 +1,23 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
+.page-transition {
+  animation: page-enter 150ms ease-out;
+}
+@keyframes page-enter {
+  from {
+    opacity: 0.96;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+  }
+}
+
 .media-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -683,6 +700,7 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
 }
 .sidebar > .brand {
   margin-bottom: 2.5rem;
@@ -833,6 +851,17 @@
 }
 .workspace-topbar .avatar {
   margin-left: 1rem;
+}
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex-shrink: 0;
+}
+.admin-signout {
+  font-size: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  white-space: nowrap;
 }
 .status-dot {
   width: 6px;
@@ -1027,6 +1056,11 @@
   }
   .workspace-topbar > div {
     font-size: 0;
+  }
+  .admin-topbar .connection-label,
+  .admin-topbar .status-dot,
+  .admin-topbar .avatar {
+    display: none;
   }
   .workspace-content {
     padding: 1.8rem 1rem;

@@ -1,20 +1,44 @@
 import { Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import { LogOut } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { errorMessage } from '../api/axios.js';
 import Sidebar from '../components/Sidebar.jsx';
 import useAuth from '../hooks/useAuth.js';
 
 export default function AdminLayout() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [signingOut, setSigningOut] = useState(false);
+  const signOut = async () => {
+    setSigningOut(true);
+    try {
+      await logout();
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setSigningOut(false);
+    }
+  };
   return (
     <div className="workspace-shell">
       <Sidebar />
       <div className="workspace-main">
-        <header className="workspace-topbar">
+        <header className="workspace-topbar admin-topbar">
           <span>
             Workspace <span className="muted">/ Administration</span>
           </span>
           <div>
             <span className="status-dot" />
-            All systems connected <span className="avatar">{user.name.slice(0, 1)}</span>
+            <span className="connection-label">All systems connected</span>
+            <span className="avatar">{user.name.slice(0, 1)}</span>
+            <button
+              className="button secondary admin-signout"
+              onClick={signOut}
+              disabled={signingOut}
+            >
+              <LogOut size={16} aria-hidden="true" />
+              {signingOut ? 'Signing out…' : 'Sign out'}
+            </button>
           </div>
         </header>
         <main className="workspace-content">
