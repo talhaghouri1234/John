@@ -14,5 +14,6 @@
     "test:coverage": "npm run test:coverage --workspaces --if-present",
     "build": "npm run build --workspace client"
   },
-  "devDependencies": { "concurrently": "^9.2.0" }
+  "devDependencies": { "concurrently": "^9.2.0" },
+  "overrides": { "shell-quote": "^1.11.0" }
 }
