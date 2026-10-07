@@ -23,3 +23,31 @@ npm run install:all
 Use `localhost` consistently: CORS and browser-origin checks use
 `http://localhost:5173`. Vite proxies `/api` to Express during development.
 Run workspace commands from the repository root as shown in this guide.
+
+## Environment configuration
+
+Keep actual values in the ignored `server/.env`; never place credentials in
+`.env.example`, source code, or Git. The server validates configuration before starting.
+
+| Variable | Purpose / development value |
+| --- | --- |
+| `PORT` | API port, `5000` |
+| `NODE_ENV` | `development`, `test`, or `production` |
+| `MONGO_URI` | Your MongoDB URI, including the intended database name |
+| `JWT_ACCESS_SECRET` | Random secret of at least 32 characters |
+| `JWT_REFRESH_SECRET` | A different random secret of at least 32 characters |
+| `JWT_ACCESS_EXPIRES` | Access lifetime, `15m` |
+| `JWT_REFRESH_EXPIRES` | Refresh lifetime, `7d` |
+| `CLIENT_URL` | Browser origin, `http://localhost:5173` |
+| `VITE_API_URL` | Client API path, `/api`; client-side values are public |
+
+Generate each JWT secret independently with:
+
+```sh
+node -e "console.log(require('node:crypto').randomBytes(48).toString('base64'))"
+```
+
+In Atlas, create a database user, allow your development machine in Network Access,
+and copy the driver connection string. URL-encode special characters in its password.
+Include a database name in the URI so seeding targets the intended database.
+Restart the API after changing environment variables.
