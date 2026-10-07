@@ -2,7 +2,10 @@
 
 A complete React + Express + Node.js + MongoDB workspace with cookie-based JWT
 authentication, admin/user access controls, category CRUD, user administration,
-responsive dark mode, and isolated automated tests.
+responsive dark mode, shared media uploads, and isolated automated tests.
+
+**New to full-stack development? Start with the [Beginner setup and file guide](docs/BEGINNER-GUIDE.md).**
+It explains every setting, JWT secret generation, frontend/backend setup, and what each source file does.
 
 ## Quick start
 
@@ -39,6 +42,7 @@ Keep actual values in the ignored `server/.env`; never place credentials in
 | `JWT_ACCESS_EXPIRES` | Access lifetime, `15m` |
 | `JWT_REFRESH_EXPIRES` | Refresh lifetime, `7d` |
 | `CLIENT_URL` | Browser origin, `http://localhost:5173` |
+| `MEDIA_UPLOAD_DIR` | Optional absolute private upload folder; blank uses `server/uploads/` |
 | `VITE_API_URL` | Client API path, `/api`; client-side values are public |
 
 Generate each JWT secret independently with:
@@ -106,7 +110,7 @@ All routes are under `/api`. Authentication uses `accessToken` and `refreshToken
 httpOnly cookies; send credentials with requests. Errors use
 `{ "success": false, "message": "...", "errors": [{ "field": "...", "message": "..." }] }`;
 `errors` is included for input-validation errors. Successful responses include
-`success`, `message`, and the payload described below.
+`success` and the payload described below; most operations also include `message`.
 
 | Method | Endpoint | Access | Body / result |
 | --- | --- | --- | --- |
@@ -124,6 +128,10 @@ httpOnly cookies; send credentials with requests. Errors use
 | PATCH | `/users/:id/role` | Admin | `{role:"admin"\|"user"}` |
 | PATCH | `/users/:id/active` | Admin | `{isActive:boolean}` |
 | DELETE | `/users/:id` | Admin | Deletes user |
+| GET | `/media` | Authenticated | `media`, `pagination`; page/limit/search/kind filters |
+| POST | `/media` | Admin | Multipart `file` up to 25 MiB; returns `media` |
+| GET | `/media/:id/file` | Authenticated | Private binary file; images/video support ranges, documents download |
+| DELETE | `/media/:id` | Admin | Deletes stored file and media metadata |
 
 Category lists accept `page` (default 1), `limit` (default 10, maximum 100),
 `search` (literal case-insensitive name search), `sort` (`name`, `-name`,
@@ -144,8 +152,10 @@ server/
   src/app.js                 Express middleware and routing; no listen side effect
   src/server.js              Environment validation, DB connection, HTTP startup/shutdown
   src/config/                Environment and MongoDB configuration
-  src/models/                User and Category schemas
-  src/controllers/           Authentication, users, and category operations
+  src/models/                User, Category, and Media schemas
+  src/controllers/           Authentication, users, categories, and media operations
+  src/storage/               Private local storage adapter and provider selection
+  uploads/                   Local file bytes (generated and Git-ignored)
   src/routes/                Endpoint wiring and access policies
   src/middleware/            Authentication, authorization, validation, and errors
   src/validators/            Zod input schemas
@@ -215,6 +225,15 @@ existing category feature as a complete reference from model through UI.
   against production. Review and update dependencies regularly with `npm audit`.
 - The server connects before listening and shuts down HTTP and MongoDB on termination.
   `/api/health` reports HTTP service liveness; it is not a database readiness probe.
+
+## Media uploads
+
+Admins can upload images, videos and documents through **Media library**. All
+signed-in users can preview/download shared files, including on their dashboards.
+Files are stored in the ignored `server/uploads/` folder; metadata is stored in
+MongoDB. The limit is one file up to 25 MiB per upload. See the
+[media guide](docs/media-storage.md) for formats, API examples, deployment notes,
+the storage adapter contract, and how to replace local storage with Cloudflare R2.
 
 ## Troubleshooting
 

@@ -7,6 +7,7 @@ import {
   UserRound,
   ArrowUpRight,
   LogOut,
+  Images,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth.js';
 import toast from 'react-hot-toast';
@@ -19,6 +20,7 @@ export default function Sidebar() {
   const links = [
     ['dashboard', 'Overview', LayoutDashboard],
     ['categories', 'Categories', FolderOpen],
+    ['media', 'Media library', Images],
     ...(admin ? [['users', 'Team members', Users]] : [['profile', 'My profile', UserRound]]),
   ];
   return (

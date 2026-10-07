@@ -1,6 +1,99 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.media-card.card {
+  padding: 0;
+  overflow: hidden;
+  min-width: 0;
+}
+.media-preview {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wash);
+  color: var(--muted);
+}
+.media-preview img,
+.media-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.media-info {
+  padding: 20px;
+}
+.media-info h3 {
+  overflow-wrap: anywhere;
+  margin: 12px 0 8px;
+}
+.media-info .badge,
+.media-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.media-info .badge {
+  width: fit-content;
+}
+.media-actions {
+  justify-content: space-between;
+  margin-top: 18px;
+}
+.media-upload {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.media-upload p {
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 760px;
+}
+.media-upload .button {
+  justify-self: start;
+}
+.media-upload progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.media-upload input {
+  width: 100%;
+  min-width: 0;
+}
+.media-toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.media-toolbar select {
+  width: 180px;
+}
+.media-section-heading {
+  margin-top: 36px;
+}
+@media (max-width: 1100px) {
+  .media-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .media-grid {
+    grid-template-columns: 1fr;
+  }
+  .media-toolbar {
+    flex-direction: column;
+  }
+  .media-toolbar select {
+    width: 100%;
+  }
+}
+
 .landing {
   overflow-x: clip;
   max-width: 1280px;
