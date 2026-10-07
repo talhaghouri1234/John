@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { mediaApi } from '../api/media.api.js';
 import { errorMessage } from '../api/axios.js';
 
 export const ACCEPTED_MEDIA = '.jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.pdf,.docx,.xlsx,.pptx';
 export default function MediaUpload({ onUploaded }) {
+  const input = useRef(null);
   const [file, setFile] = useState(null);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -19,7 +20,7 @@ export default function MediaUpload({ onUploaded }) {
     try {
       await mediaApi.upload(file, setProgress);
       setFile(null);
-      event.target.reset();
+      input.current.value = '';
       await onUploaded();
     } catch (err) {
       setError(errorMessage(err));
@@ -40,6 +41,7 @@ export default function MediaUpload({ onUploaded }) {
       <label htmlFor="media-file">Choose media</label>
       <input
         id="media-file"
+        ref={input}
         type="file"
         accept={ACCEPTED_MEDIA}
         disabled={busy}
