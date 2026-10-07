@@ -168,3 +168,27 @@ client/
 Public pages: `/`, `/login`, `/register`, `/unauthorized`. Admin pages live under
 `/admin`; user pages under `/user`. Unknown routes show a 404 page. A logged-in
 visitor to login or register is redirected to their role's dashboard.
+
+## Add a new resource
+
+For example, to add projects:
+
+1. Create `server/src/models/Project.js` with a Mongoose schema, ownership fields,
+   timestamps, and required indexes. Keep secrets excluded from selection/serialization.
+2. Define strict Zod schemas for bodies, route parameters, and list queries in
+   `server/src/validators/project.js`. Allowlist sort keys and bound pagination.
+3. Add controllers using `asyncHandler` and `ApiError`. Escape literal search text
+   with `escapeRegex`; return the same response and pagination conventions as categories.
+4. Add a router with `protect` and, where needed, `authorize('admin')`; validate all
+   input and mount it under `/projects` in `server/src/routes/index.js`.
+5. Add Jest/Supertest integration tests for successful CRUD, invalid input, missing
+   records, unauthenticated requests, and wrong-role access. Use the existing test DB.
+6. Create a client API module using the shared `api` instance and React Query hooks
+   keyed by `['projects', params]`. Invalidate that prefix after successful mutations.
+7. Add pages with loading/error/empty states, validated forms, and mutation feedback.
+   Register lazy routes under the appropriate role guard and update the sidebar.
+8. Add RTL/MSW tests for forms, route behavior, and user actions; run both suites,
+   lint, and build before merging the feature branch into `develop` with `--no-ff`.
+
+Client guards improve navigation but never replace server authorization. Use the
+existing category feature as a complete reference from model through UI.
