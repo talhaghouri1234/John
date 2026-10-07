@@ -51,3 +51,20 @@ In Atlas, create a database user, allow your development machine in Network Acce
 and copy the driver connection string. URL-encode special characters in its password.
 Include a database name in the URI so seeding targets the intended database.
 Restart the API after changing environment variables.
+
+## Seed data and demo accounts
+
+`npm run seed` **deletes every user and category in the configured database**, then
+creates these accounts and ten categories owned by the admin. Use a dedicated
+development database. `npm run seed:destroy` only clears users and categories.
+Both commands refuse to run with `NODE_ENV=production`.
+
+| Role | Email | Demo password | Dashboard |
+| --- | --- | --- | --- |
+| Admin | admin@example.com | Admin@123 | `/admin/dashboard` |
+| User | user1@example.com | User@123 | `/user/dashboard` |
+| User | user2@example.com | User@123 | `/user/dashboard` |
+
+These credentials are public demo fixtures. Do not use them for production accounts.
+The seed creates Electronics, Fashion, Books, Home, Sports, Toys, Beauty, Grocery,
+Automotive, and Health. It prints account credentials after successful creation.
