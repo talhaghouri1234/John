@@ -10,8 +10,8 @@ export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
   useEffect(() => {
     let active = true;
-    authApi
-      .me()
+    queryClient
+      .fetchQuery({ queryKey: ['auth', 'me'], queryFn: authApi.me, retry: false, staleTime: 0 })
       .then((current) => {
         if (active) setUser(current);
       })

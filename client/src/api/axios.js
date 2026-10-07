@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_URL || '/api';
-export const api = axios.create({ baseURL, withCredentials: true, timeout: 15000 });
-const refreshClient = axios.create({ baseURL, withCredentials: true, timeout: 15000 });
+export const api = axios.create({ baseURL, withCredentials: true, timeout: 30000 });
+const refreshClient = axios.create({ baseURL, withCredentials: true, timeout: 30000 });
 let refreshRequest;
 
 api.interceptors.response.use(
