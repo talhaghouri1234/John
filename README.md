@@ -1,86 +1,232 @@
-# MERN Starter Kit
+# Forma — MERN Starter Kit
 
-A React, Express, Node.js, and MongoDB monorepo with cookie-based authentication,
-role-based access, and category management.
+A complete React + Express + Node.js + MongoDB workspace with cookie-based JWT
+authentication, admin/user access controls, category CRUD, user administration,
+responsive dark mode, and isolated automated tests.
 
-## Development
+## Quick start
 
-This project is being built module by module on `develop`. Feature branches are
-tested and linted before merging. `main` receives the completed release.
+Requires **Node.js 24 LTS**, **npm 11**, Git, and a MongoDB database (Atlas or local).
 
-Requires Node.js 24 LTS and npm 11. Setup and API documentation will be added
-alongside the corresponding modules.
-
-Local environment files and dependencies are excluded from version control.
-
-## Folder structure
-
-```text
-mern-starter-kit/
-  package.json          npm workspaces and combined commands
-  server/
-    src/                Express API, database configuration, models and middleware
-    tests/              API integration tests using an isolated MongoDB instance
-  client/
-    src/                React application, pages, layouts, components and hooks
-    index.html          Vite HTML entry
+```sh
+git clone https://github.com/theUsamaHub/mern-starter-kit.git
+cd mern-starter-kit
+npm run install:all
 ```
 
-Run `npm run install:all` from the repository root to install both workspaces.
-`npm run lint` checks both applications; `npm run build` builds the React client.
+1. Copy `server/.env.example` to `server/.env` and fill in the values below.
+2. Optionally copy `client/.env.example` to `client/.env`; development defaults work without it.
+3. Run `npm run seed` against a dedicated development database.
+4. Run `npm run dev` to start both applications.
+5. Open **http://localhost:5173**. The API listens on **http://localhost:5000**.
 
-## Dependency audit
+Use `localhost` consistently: CORS and browser-origin checks use
+`http://localhost:5173`. Vite proxies `/api` to Express during development.
+Run workspace commands from the repository root as shown in this guide.
 
-On 2026-10-06, `npm audit --omit=dev` reported zero vulnerabilities. The full
-audit reports upstream issues in the requested Jest and Nodemon tooling
-(`sprintf-js` and `braces`). npm's suggested major downgrades are not applied.
-Recheck with `npm audit` when updating dependencies. Development tools should
-only run in a trusted development environment.
+## Environment configuration
 
-## User administration
+Keep actual values in the ignored `server/.env`; never place credentials in
+`.env.example`, source code, or Git. The server validates configuration before starting.
 
-All `/api/users` routes require an active admin session. List users with `GET /`
-and `page`, `limit`, and `search` query parameters. Use `PATCH /:id/role` with
-`{ "role": "admin" }` or `{ "role": "user" }`, `PATCH /:id/active` with
-`{ "isActive": false }`, and `DELETE /:id`. Administrators cannot modify their
-own access or delete themselves. Public registration only accepts user accounts.
+| Variable | Purpose / development value |
+| --- | --- |
+| `PORT` | API port, `5000` |
+| `NODE_ENV` | `development`, `test`, or `production` |
+| `MONGO_URI` | Your MongoDB URI, including the intended database name |
+| `JWT_ACCESS_SECRET` | Random secret of at least 32 characters |
+| `JWT_REFRESH_SECRET` | A different random secret of at least 32 characters |
+| `JWT_ACCESS_EXPIRES` | Access lifetime, `15m` |
+| `JWT_REFRESH_EXPIRES` | Refresh lifetime, `7d` |
+| `CLIENT_URL` | Browser origin, `http://localhost:5173` |
+| `VITE_API_URL` | Client API path, `/api`; client-side values are public |
 
-## Seed data
+Generate each JWT secret independently with:
 
-Run `npm run seed` from the root. This **deletes all existing users and categories**
-in the database selected by `server/.env`, then inserts three accounts and ten
-categories. `npm run seed:destroy` only deletes those collections' documents.
-These commands are disabled when `NODE_ENV=production`.
+```sh
+node -e "console.log(require('node:crypto').randomBytes(48).toString('base64'))"
+```
 
-| Role | Email | Demo password |
-| --- | --- | --- |
-| Admin | admin@example.com | Admin@123 |
-| User | user1@example.com | User@123 |
-| User | user2@example.com | User@123 |
+In Atlas, create a database user, allow your development machine in Network Access,
+and copy the driver connection string. URL-encode special characters in its password.
+Include a database name in the URI so seeding targets the intended database.
+Restart the API after changing environment variables.
 
-These are public demonstration credentials, not production accounts.
+## Seed data and demo accounts
 
-## Local environment
+`npm run seed` **deletes every user and category in the configured database**, then
+creates these accounts and ten categories owned by the admin. Use a dedicated
+development database. `npm run seed:destroy` only clears users and categories.
+Both commands refuse to run with `NODE_ENV=production`.
 
-Copy `server/.env.example` to `server/.env`. Paste your Atlas connection string
-into `MONGO_URI`, including the intended database name. URL-encode special
-characters in the database password and allow your development machine in
-Atlas network access settings. Use a separate development database for seeding.
+| Role | Email | Demo password | Dashboard |
+| --- | --- | --- | --- |
+| Admin | admin@example.com | Admin@123 | `/admin/dashboard` |
+| User | user1@example.com | User@123 | `/user/dashboard` |
+| User | user2@example.com | User@123 | `/user/dashboard` |
 
-Set `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` to different random values of
-at least 32 characters. Keep `CLIENT_URL=http://localhost:5173` for local use.
-Run scripts from the root or their workspace so the server loads `server/.env`.
-Never commit `.env` or paste your connection string into tracked files.
+These credentials are public demo fixtures. Do not use them for production accounts.
+The seed creates Electronics, Fashion, Books, Home, Sports, Toys, Beauty, Grocery,
+Automotive, and Health. It prints account credentials after successful creation.
 
-## Backend tests
+## Commands and tests
 
-`npm run test --workspace server` runs Jest and Supertest against temporary
-databases managed by `mongodb-memory-server`. Test configuration replaces the
-Atlas URI before application imports. On Windows, an installed MongoDB binary
-is reused automatically; otherwise the first run downloads one. You can also
-set `MONGOMS_SYSTEM_BINARY` to a compatible `mongod` executable. No existing
-database service or data directory is used. The first download may take several
-minutes; subsequent runs use the cache.
+| Command from root | Purpose |
+| --- | --- |
+| `npm run install:all` | Install both workspaces and root tooling |
+| `npm run dev` | Run Express and Vite together; Ctrl+C stops both |
+| `npm run seed` / `npm run seed:destroy` | Reset demo data / clear data |
+| `npm test` | Run backend and frontend test suites |
+| `npm run test:coverage` | Run both coverage reports |
+| `npm run lint` | Lint both applications |
+| `npm run build` | Build the client into `client/dist` |
+| `npm run start --workspace server` | Start the API without Nodemon |
+| `npm run test:watch --workspace server` | Watch backend tests |
+| `npm run test:watch --workspace client` | Watch frontend tests |
 
-Use `npm run test:coverage --workspace server` for a coverage report or
-`npm run test:watch --workspace server` during development.
+Backend tests use Jest, Supertest, and `mongodb-memory-server`. The test environment
+overrides `MONGO_URI` before importing the app and only connects to a disposable
+MongoDB instance. It never uses Atlas or an existing database service. On Windows,
+tests reuse an installed `mongod` binary automatically. Otherwise, the first run
+downloads one; allow time and network access. Set `MONGOMS_SYSTEM_BINARY` to use a
+compatible executable explicitly. Each suite uses a fresh temporary data directory.
+
+Frontend tests use Vitest, React Testing Library, jsdom, and MSW. They cover login
+validation and redirects for both roles, route guards, category forms/tables, and
+refresh concurrency. HTTP requests are mocked. Coverage reports are written under
+each workspace's ignored `coverage/` directory. Tests cover behavior rather than
+claiming exhaustive coverage of every presentation component.
+
+Both workspaces include ESLint and Prettier configuration. Format files with
+`npx prettier --write <path>` from the appropriate workspace.
+
+## API reference
+
+All routes are under `/api`. Authentication uses `accessToken` and `refreshToken`
+httpOnly cookies; send credentials with requests. Errors use
+`{ "success": false, "message": "...", "errors": [{ "field": "...", "message": "..." }] }`;
+`errors` is included for input-validation errors. Successful responses include
+`success`, `message`, and the payload described below.
+
+| Method | Endpoint | Access | Body / result |
+| --- | --- | --- | --- |
+| GET | `/health` | Public | Health message |
+| POST | `/auth/register` | Public | `{name,email,password}`; returns `user` |
+| POST | `/auth/login` | Public | `{email,password}`; returns `user` |
+| POST | `/auth/refresh` | Refresh cookie | Rotates cookies; returns `user` |
+| POST | `/auth/logout` | Public | Revokes matching refresh token and clears cookies |
+| GET | `/auth/me` | Authenticated | Current `user` |
+| GET | `/categories` | Authenticated | `categories`, `pagination` |
+| POST | `/categories` | Admin | `{name,description?,image?,isActive?}`; returns `category` |
+| PUT | `/categories/:id` | Admin | One or more editable category fields; returns `category` |
+| DELETE | `/categories/:id` | Admin | Deletes category |
+| GET | `/users` | Admin | `users`, `pagination` |
+| PATCH | `/users/:id/role` | Admin | `{role:"admin"\|"user"}` |
+| PATCH | `/users/:id/active` | Admin | `{isActive:boolean}` |
+| DELETE | `/users/:id` | Admin | Deletes user |
+
+Category lists accept `page` (default 1), `limit` (default 10, maximum 100),
+`search` (literal case-insensitive name search), `sort` (`name`, `-name`,
+`createdAt`, `-createdAt`; default `-createdAt`), and `isActive` (`true` or `false`).
+User lists accept `page`, `limit`, and a name/email `search`. Pagination is
+`{page,limit,total,pages}`. An empty result has `total:0` and `pages:0`.
+
+Registration always creates a user; extra fields such as `role` are rejected.
+Administrators can promote another user but cannot change their own access or
+delete themselves. Category slugs update when names change. Passwords and refresh
+token hashes are never serialized in API responses.
+
+## Project structure
+
+```text
+package.json                 npm workspaces and combined commands
+server/
+  src/app.js                 Express middleware and routing; no listen side effect
+  src/server.js              Environment validation, DB connection, HTTP startup/shutdown
+  src/config/                Environment and MongoDB configuration
+  src/models/                User and Category schemas
+  src/controllers/           Authentication, users, and category operations
+  src/routes/                Endpoint wiring and access policies
+  src/middleware/            Authentication, authorization, validation, and errors
+  src/validators/            Zod input schemas
+  src/utils/                 Tokens, errors, async wrapper, and literal search escaping
+  src/seed/                  Seed runner and demo fixtures
+  tests/                     Isolated API integration tests and smoke checks
+client/
+  src/api/                   Axios, refresh interceptor, API clients, and QueryClient
+  src/context/               Current session and login/register/logout actions
+  src/hooks/                 Auth and category query/mutation hooks
+  src/routes/                Lazy routing and role guards
+  src/layouts/               Public, admin, and user layouts
+  src/components/            Forms, tables, dialogs, navigation, and motion components
+  src/pages/                 Public, admin, and user pages
+  src/utils/                 Role-based dashboard paths
+  src/tests/                 Vitest, RTL, and MSW tests
+  src/styles.css             Tailwind import, theme tokens, and responsive styling
+```
+
+Public pages: `/`, `/login`, `/register`, `/unauthorized`. Admin pages live under
+`/admin`; user pages under `/user`. Unknown routes show a 404 page. A logged-in
+visitor to login or register is redirected to their role's dashboard.
+
+## Add a new resource
+
+For example, to add projects:
+
+1. Create `server/src/models/Project.js` with a Mongoose schema, ownership fields,
+   timestamps, and required indexes. Keep secrets excluded from selection/serialization.
+2. Define strict Zod schemas for bodies, route parameters, and list queries in
+   `server/src/validators/project.js`. Allowlist sort keys and bound pagination.
+3. Add controllers using `asyncHandler` and `ApiError`. Escape literal search text
+   with `escapeRegex`; return the same response and pagination conventions as categories.
+4. Add a router with `protect` and, where needed, `authorize('admin')`; validate all
+   input and mount it under `/projects` in `server/src/routes/index.js`.
+5. Add Jest/Supertest integration tests for successful CRUD, invalid input, missing
+   records, unauthenticated requests, and wrong-role access. Use the existing test DB.
+6. Create a client API module using the shared `api` instance and React Query hooks
+   keyed by `['projects', params]`. Invalidate that prefix after successful mutations.
+7. Add pages with loading/error/empty states, validated forms, and mutation feedback.
+   Register lazy routes under the appropriate role guard and update the sidebar.
+8. Add RTL/MSW tests for forms, route behavior, and user actions; run both suites,
+   lint, and build before merging the feature branch into `develop` with `--no-ff`.
+
+Client guards improve navigation but never replace server authorization. Use the
+existing category feature as a complete reference from model through UI.
+
+## Deployment and operational notes
+
+- Build with `npm run build`; serve `client/dist` through a static host or reverse
+  proxy with a fallback to `index.html` for client routes. The Express API does not
+  serve the frontend build. Route `/api` to the API process on the same public origin.
+- Run the API with `NODE_ENV=production`, a production database, strong independent
+  JWT secrets, and `CLIENT_URL` set to the exact HTTPS frontend origin. Production
+  cookies are `Secure`, `HttpOnly`, and `SameSite=Lax`; HTTPS is required. Prefer the
+  same public origin for frontend and API. Cross-site cookie deployment is not configured.
+- Registration and login issue short-lived access tokens and rotating refresh tokens.
+  Only the refresh-token hash is stored. Each account has one current refresh session;
+  signing in again replaces it. Logout revokes the matching refresh session and clears
+  browser cookies. A copied access token remains usable until its short expiry unless
+  the account is disabled/deleted; protection reloads the current user on every request.
+- Helmet, credentialed CORS, input limits, Mongo sanitization, strict validation, and
+  browser-origin checks protect requests. Authentication routes are rate-limited.
+  The included limiter uses memory for a single API process. For multiple instances,
+  configure a shared store and a narrowly scoped trusted-proxy setting for your deployment.
+- Keep database backups and credentials outside the repository. Never run demo seed
+  against production. Review and update dependencies regularly with `npm audit`.
+- The server connects before listening and shuts down HTTP and MongoDB on termination.
+  `/api/health` reports HTTP service liveness; it is not a database readiness probe.
+
+## Troubleshooting
+
+- **Invalid environment:** check every named variable; secrets must differ and have
+  at least 32 characters. Values are deliberately omitted from diagnostics.
+- **Database connection failed:** check Atlas credentials, network allowlist, database
+  name, and DNS/connectivity. Seeding errors also omit connection values.
+- **Origin not allowed:** open `http://localhost:5173`, or deliberately update
+  `CLIENT_URL` to match the browser origin and restart the API.
+- **Port occupied:** stop the existing process or change API `PORT` and the Vite proxy
+  together. Vite uses `strictPort` so it cannot silently change the allowed origin.
+- **First backend test run is slow:** MongoDB's binary download can be large. Use an
+  installed binary via `MONGOMS_SYSTEM_BINARY` or let the download finish and cache.
+- **Test runner cannot open localhost sockets or temporary files:** run tests in an
+  environment that permits local processes and loopback connections.
