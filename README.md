@@ -218,6 +218,14 @@ existing category feature as a complete reference from model through UI.
 
 ## Troubleshooting
 
+### Dependency audit at v1.0.0
+
+`npm audit --omit=dev` reports zero vulnerabilities. The full audit reports
+22 development-tooling findings (19 moderate, 3 high), primarily through
+Nodemon/Chokidar and Jest/Istanbul. npm's proposed automatic fixes downgrade major
+tool versions; these were not applied. A compatible `shell-quote` override removes
+the critical findings. Recheck advisories when updating the development toolchain.
+
 - **Invalid environment:** check every named variable; secrets must differ and have
   at least 32 characters. Values are deliberately omitted from diagnostics.
 - **Database connection failed:** check Atlas credentials, network allowlist, database
