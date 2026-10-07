@@ -16,7 +16,12 @@ export function createLocalStorage(root = defaultRoot) {
     async save({ buffer, extension }) {
       const key = `${randomUUID()}.${extension}`;
       await mkdir(directory, { recursive: true });
-      await writeFile(resolveKey(key), buffer, { flag: 'wx', mode: 0o600 });
+      try { await writeFile(resolveKey(key), buffer, { flag: 'wx', mode: 0o600 }); }
+      catch (error) {
+        // A failed disk write can leave a partial file. Never remove an existing collision.
+        if (error.code !== 'EEXIST') await unlink(resolveKey(key)).catch(() => {});
+        throw error;
+      }
       return key;
     },
     async remove(key) {
