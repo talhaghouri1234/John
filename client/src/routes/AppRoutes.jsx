@@ -1,0 +1,56 @@
+import { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import PublicLayout from '../layouts/PublicLayout.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
+import RoleRoute from './RoleRoute.jsx';
+import Loader from '../components/Loader.jsx';
+
+const Home = lazy(() => import('../pages/public/Home.jsx'));
+const Login = lazy(() => import('../pages/public/Login.jsx'));
+const Register = lazy(() => import('../pages/public/Register.jsx'));
+const NotFound = lazy(() => import('../pages/public/NotFound.jsx'));
+const Unauthorized = lazy(() => import('../pages/public/Unauthorized.jsx'));
+const UserLayout = lazy(() => import('../layouts/UserLayout.jsx'));
+const UserDashboard = lazy(() => import('../pages/user/UserDashboard.jsx'));
+const BrowseCategories = lazy(() => import('../pages/user/BrowseCategories.jsx'));
+const Profile = lazy(() => import('../pages/user/Profile.jsx'));
+const AdminLayout = lazy(() => import('../layouts/AdminLayout.jsx'));
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard.jsx'));
+const ManageCategories = lazy(() => import('../pages/admin/ManageCategories.jsx'));
+const ManageUsers = lazy(() => import('../pages/admin/ManageUsers.jsx'));
+
+export default function AppRoutes() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="unauthorized" element={<Unauthorized />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route element={<RoleRoute role="admin" />}>
+            <Route path="admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="categories" element={<ManageCategories />} />
+              <Route path="users" element={<ManageUsers />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Route>
+          <Route element={<RoleRoute role="user" />}>
+            <Route path="user" element={<UserLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<UserDashboard />} />
+              <Route path="categories" element={<BrowseCategories />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Route>
+        </Route>
+      </Routes>
+    </Suspense>
+  );
+}

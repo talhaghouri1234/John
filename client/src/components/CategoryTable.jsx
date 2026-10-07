@@ -1,0 +1,95 @@
+import { Pencil, Trash2, Folder } from 'lucide-react';
+import Pagination from './Pagination.jsx';
+
+export default function CategoryTable({
+  categories,
+  pagination,
+  onPageChange,
+  onEdit,
+  onDelete,
+  search,
+  onSearch,
+}) {
+  return (
+    <>
+      {onSearch && (
+        <div className="toolbar">
+          <input
+            aria-label="Search categories"
+            placeholder="Search categories…"
+            value={search}
+            onChange={(event) => onSearch(event.target.value)}
+          />
+        </div>
+      )}
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Category name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Created</th>
+              {onEdit && <th className="text-right">Actions</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {categories.map((category) => (
+              <tr key={category._id}>
+                <td>
+                  <span className="category-name">
+                    <span className="category-icon">
+                      <Folder size={17} />
+                    </span>
+                    <strong>{category.name}</strong>
+                  </span>
+                </td>
+                <td>
+                  <span className="table-description">{category.description || '—'}</span>
+                </td>
+                <td>
+                  <span className={`badge ${category.isActive ? '' : 'inactive'}`}>
+                    {category.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
+                <td className="muted">
+                  {new Date(category.createdAt).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </td>
+                {onEdit && (
+                  <td className="actions text-right">
+                    <button
+                      className="icon-button"
+                      aria-label={`Edit ${category.name}`}
+                      onClick={() => onEdit(category)}
+                    >
+                      <Pencil size={15} />
+                    </button>
+                    <button
+                      className="icon-button"
+                      aria-label={`Delete ${category.name}`}
+                      onClick={() => onDelete(category)}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {categories.length === 0 && (
+          <div className="empty">
+            <Folder size={30} className="mx-auto mb-3" />
+            <h3>No categories found</h3>
+            <p>Try another search, or create your first category.</p>
+          </div>
+        )}
+      </div>
+      {pagination && <Pagination pagination={pagination} onPageChange={onPageChange} />}
+    </>
+  );
+}
