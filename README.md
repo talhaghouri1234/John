@@ -99,3 +99,39 @@ claiming exhaustive coverage of every presentation component.
 
 Both workspaces include ESLint and Prettier configuration. Format files with
 `npx prettier --write <path>` from the appropriate workspace.
+
+## API reference
+
+All routes are under `/api`. Authentication uses `accessToken` and `refreshToken`
+httpOnly cookies; send credentials with requests. Errors use
+`{ "success": false, "message": "...", "errors": [{ "field": "...", "message": "..." }] }`;
+`errors` is included for input-validation errors. Successful responses include
+`success`, `message`, and the payload described below.
+
+| Method | Endpoint | Access | Body / result |
+| --- | --- | --- | --- |
+| GET | `/health` | Public | Health message |
+| POST | `/auth/register` | Public | `{name,email,password}`; returns `user` |
+| POST | `/auth/login` | Public | `{email,password}`; returns `user` |
+| POST | `/auth/refresh` | Refresh cookie | Rotates cookies; returns `user` |
+| POST | `/auth/logout` | Public | Revokes matching refresh token and clears cookies |
+| GET | `/auth/me` | Authenticated | Current `user` |
+| GET | `/categories` | Authenticated | `categories`, `pagination` |
+| POST | `/categories` | Admin | `{name,description?,image?,isActive?}`; returns `category` |
+| PUT | `/categories/:id` | Admin | One or more editable category fields; returns `category` |
+| DELETE | `/categories/:id` | Admin | Deletes category |
+| GET | `/users` | Admin | `users`, `pagination` |
+| PATCH | `/users/:id/role` | Admin | `{role:"admin"\|"user"}` |
+| PATCH | `/users/:id/active` | Admin | `{isActive:boolean}` |
+| DELETE | `/users/:id` | Admin | Deletes user |
+
+Category lists accept `page` (default 1), `limit` (default 10, maximum 100),
+`search` (literal case-insensitive name search), `sort` (`name`, `-name`,
+`createdAt`, `-createdAt`; default `-createdAt`), and `isActive` (`true` or `false`).
+User lists accept `page`, `limit`, and a name/email `search`. Pagination is
+`{page,limit,total,pages}`. An empty result has `total:0` and `pages:0`.
+
+Registration always creates a user; extra fields such as `role` are rejected.
+Administrators can promote another user but cannot change their own access or
+delete themselves. Category slugs update when names change. Passwords and refresh
+token hashes are never serialized in API responses.
