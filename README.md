@@ -135,3 +135,36 @@ Registration always creates a user; extra fields such as `role` are rejected.
 Administrators can promote another user but cannot change their own access or
 delete themselves. Category slugs update when names change. Passwords and refresh
 token hashes are never serialized in API responses.
+
+## Project structure
+
+```text
+package.json                 npm workspaces and combined commands
+server/
+  src/app.js                 Express middleware and routing; no listen side effect
+  src/server.js              Environment validation, DB connection, HTTP startup/shutdown
+  src/config/                Environment and MongoDB configuration
+  src/models/                User and Category schemas
+  src/controllers/           Authentication, users, and category operations
+  src/routes/                Endpoint wiring and access policies
+  src/middleware/            Authentication, authorization, validation, and errors
+  src/validators/            Zod input schemas
+  src/utils/                 Tokens, errors, async wrapper, and literal search escaping
+  src/seed/                  Seed runner and demo fixtures
+  tests/                     Isolated API integration tests and smoke checks
+client/
+  src/api/                   Axios, refresh interceptor, API clients, and QueryClient
+  src/context/               Current session and login/register/logout actions
+  src/hooks/                 Auth and category query/mutation hooks
+  src/routes/                Lazy routing and role guards
+  src/layouts/               Public, admin, and user layouts
+  src/components/            Forms, tables, dialogs, navigation, and motion components
+  src/pages/                 Public, admin, and user pages
+  src/utils/                 Role-based dashboard paths
+  src/tests/                 Vitest, RTL, and MSW tests
+  src/styles.css             Tailwind import, theme tokens, and responsive styling
+```
+
+Public pages: `/`, `/login`, `/register`, `/unauthorized`. Admin pages live under
+`/admin`; user pages under `/user`. Unknown routes show a 404 page. A logged-in
+visitor to login or register is redirected to their role's dashboard.
