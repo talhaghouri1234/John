@@ -57,10 +57,10 @@ You normally run two apps and one database. `npm run dev` starts the two apps to
 
 ## 2. Install your tools
 
-Use Node.js **24.x** and npm **11.x**, matching this repository's configuration.
+Use Node.js **20.1+**, **22.x**, or **24+**, with npm **9.6.4+**. Keep the npm version bundled with Node.
 Get Node from the [official download page](https://nodejs.org/en/download), Git
 from [git-scm.com](https://git-scm.com/downloads), and an editor such as VS Code.
-Select a Node 24 installer if the download page defaults to another major version.
+For institute computers, early Node 20 is supported. See [Node/npm compatibility](NODE-VERSIONS.md) for commands and exact requirements.
 npm is included with Node. You do not need to install React or Express globally.
 
 Close and reopen the terminal after installing. Check:
@@ -71,7 +71,7 @@ npm --version
 git --version
 ```
 
-Expect `v24...`, `11...` and a Git version. If PowerShell blocks `npm.ps1`, use
+For example, `v20.1.0` with `9.6.4`, or `v24...` with `11...`, and a Git version. If PowerShell blocks `npm.ps1`, use
 `npm.cmd` instead of `npm` in the commands below, or use a Command Prompt terminal.
 You do not need to disable your computer's execution policy.
 
@@ -587,7 +587,7 @@ origin/proxy settings. Use `npm run dev` for the normal local workflow.
 
 | Symptom | What to check |
 | --- | --- |
-| `node`/`npm` not recognized | Install Node 24 and reopen the terminal. |
+| `node`/`npm` not recognized | Install a compatible Node version (20.1+, 22.x or 24+) and reopen the terminal. |
 | `npm.ps1 cannot be loaded` | Run `npm.cmd ...` or switch the terminal to Command Prompt. |
 | `package.json` not found | Run `cd E:\mern-starter-kit` (or your own clone path) first. |
 | `Invalid environment: ...` | Open `server/.env`; fill the named variable, remove placeholder text and restart. |
