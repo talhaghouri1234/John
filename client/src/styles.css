@@ -701,6 +701,10 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+.sidebar > * {
+  flex-shrink: 0;
 }
 .sidebar > .brand {
   margin-bottom: 2.5rem;
@@ -1022,6 +1026,8 @@
   .sidebar {
     position: static;
     height: auto;
+    overflow-y: visible;
+    overscroll-behavior-y: auto;
     width: 100%;
     padding: 1rem;
   }
