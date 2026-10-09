@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 
 export const hashToken = (token) => createHash('sha256').update(token).digest('hex');
-export const cookieOptions = { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'lax', path: '/' };
+export const cookieOptions = { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: env.COOKIE_SAME_SITE, path: '/' };
 const duration = (value) => Number(value.slice(0, -1)) * { s: 1000, m: 60000, h: 3600000, d: 86400000 }[value.slice(-1)];
 
 export function generateTokens(user) {

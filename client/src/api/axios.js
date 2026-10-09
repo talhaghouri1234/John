@@ -1,8 +1,20 @@
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_URL || '/api';
-export const api = axios.create({ baseURL, withCredentials: true, timeout: 30000 });
-const refreshClient = axios.create({ baseURL, withCredentials: true, timeout: 30000 });
+const config = {
+  baseURL,
+  withCredentials: true,
+  timeout: 30000,
+};
+export const api = axios.create(config);
+const refreshClient = axios.create(config);
+for (const client of [api, refreshClient]) {
+  client.interceptors.request.use((request) => {
+    // Not a token: this non-simple header enforces the CORS/CSRF contract.
+    request.headers.set('X-CSRF-Protection', '1');
+    return request;
+  });
+}
 let refreshRequest;
 
 api.interceptors.response.use(

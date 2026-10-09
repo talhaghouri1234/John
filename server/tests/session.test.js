@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals';
-import request from 'supertest';
+import request from './request.js';
 import app from '../src/app.js';
 
 const account = { name: 'Session User', email: 'session@example.com', password: 'Password123!' };

@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals';
-import request from 'supertest';
+import request from './request.js';
 import app from '../src/app.js';
 import User from '../src/models/User.js';
 
