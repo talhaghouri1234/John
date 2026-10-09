@@ -24,7 +24,7 @@ export default function Sidebar() {
     ...(admin ? [['users', 'Team members', Users]] : [['profile', 'My profile', UserRound]]),
   ];
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" data-lenis-prevent>
       <Link to="/" className="brand">
         <span className="brand-mark">
           <Layers3 size={22} />
