@@ -2,7 +2,7 @@ import { test, expect, afterAll, jest } from '@jest/globals';
 import { mkdtemp, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import request from 'supertest';
+import request from './request.js';
 import Media from '../src/models/Media.js';
 import { MAX_MEDIA_BYTES } from '../src/middleware/upload.js';
 

@@ -41,7 +41,9 @@ Keep actual values in the ignored `server/.env`; never place credentials in
 | `JWT_REFRESH_SECRET` | A different random secret of at least 32 characters |
 | `JWT_ACCESS_EXPIRES` | Access lifetime, `15m` |
 | `JWT_REFRESH_EXPIRES` | Refresh lifetime, `7d` |
-| `CLIENT_URL` | Browser origin, `http://localhost:5173` |
+| `CLIENT_URL` | Primary trusted browser origin, `http://localhost:5173` locally |
+| `CLIENT_ORIGINS` | Optional comma-separated additional exact trusted origins |
+| `COOKIE_SAME_SITE` | Optional `none`, `lax` or `strict`; default `none` in production, `lax` locally |
 | `MEDIA_UPLOAD_DIR` | Optional absolute private upload folder; blank uses `server/uploads/` |
 | `VITE_API_URL` | Client API path, `/api`; client-side values are public |
 
@@ -205,13 +207,17 @@ existing category feature as a complete reference from model through UI.
 
 ## Deployment and operational notes
 
+Follow the [complete deployment guide](docs/DEPLOYMENT-GUIDE.md) for step-by-step instructions for this combined repository and the independent client/server folders.
+
 - Build with `npm run build`; serve `client/dist` through a static host or reverse
   proxy with a fallback to `index.html` for client routes. The Express API does not
   serve the frontend build. Route `/api` to the API process on the same public origin.
 - Run the API with `NODE_ENV=production`, a production database, strong independent
   JWT secrets, and `CLIENT_URL` set to the exact HTTPS frontend origin. Production
-  cookies are `Secure`, `HttpOnly`, and `SameSite=Lax`; HTTPS is required. Prefer the
-  same public origin for frontend and API. Cross-site cookie deployment is not configured.
+  cookies default to `Secure`, `HttpOnly`, and `SameSite=None`; HTTPS is required.
+  Exact trusted origins and a custom CSRF header protect writes. See the
+  [cross-site authentication fix](docs/CROSS-SITE-AUTH.md) for setup and the
+  remaining third-party-cookie browser limitation.
 - Registration and login issue short-lived access tokens and rotating refresh tokens.
   Only the refresh-token hash is stored. Each account has one current refresh session;
   signing in again replaces it. Logout revokes the matching refresh session and clears

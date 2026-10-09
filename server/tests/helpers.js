@@ -1,4 +1,4 @@
-import request from 'supertest';
+import request from './request.js';
 import User from '../src/models/User.js';
 import app from '../src/app.js';
 

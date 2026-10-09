@@ -635,9 +635,11 @@ adapter; temporary hosting disks may disappear after a restart/deployment.
 Keep database and file backups. Multi-instance hosting also needs shared storage,
 shared rate limiting and appropriately configured proxy trust.
 
-Different frontend/backend sites require a deliberate CORS/cookie design; the
-starter's `SameSite=Lax` defaults are intended for the same-site setup. Do not
-change cookie protections blindly to make a deployment error disappear.
+Different frontend/backend sites are supported with production `SameSite=None; Secure`
+cookies, exact trusted origins and a custom CSRF header. Local development keeps Lax.
+Browsers blocking third-party cookies remain a limitation of direct cross-site
+authentication. Read [the problem and fix](CROSS-SITE-AUTH.md) for exact settings
+and the optional first-party proxy fallback.
 
 ### Save your code with Git
 
