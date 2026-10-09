@@ -1,0 +1,37 @@
+name: Node compatibility
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - node: '20.1.0'
+            npm: '9.6.4'
+          - node: '20.20.2'
+            npm: '10.8.2'
+          - node: '22'
+            npm: '10'
+          - node: '24'
+            npm: '11'
+    env:
+      MONGOMS_DISABLE_POSTINSTALL: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm install --global npm@${{ matrix.npm }}
+      - run: node --version && npm --version
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:coverage
+      - run: npm run build
