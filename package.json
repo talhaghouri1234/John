@@ -2,8 +2,14 @@
   "name": "mern-starter-kit",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["server", "client"],
-  "engines": { "node": ">=24 <25" },
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": "^20.1.0 || ^22.0.0 || >=24.0.0",
+    "npm": ">=9.6.4"
+  },
   "scripts": {
     "dev": "concurrently -k -n server,client \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
     "install:all": "npm install",
@@ -14,6 +20,14 @@
     "test:coverage": "npm run test:coverage --workspaces --if-present",
     "build": "npm run build --workspace client"
   },
-  "devDependencies": { "concurrently": "^9.2.0" },
-  "overrides": { "shell-quote": "^1.11.0" }
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "overrides": {
+    "shell-quote": "^1.11.0",
+    "rollup": "4.62.2",
+    "eslint": "8.57.1",
+    "@eslint/js": "8.57.1",
+    "vite": "6.4.4"
+  }
 }

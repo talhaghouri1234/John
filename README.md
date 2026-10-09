@@ -9,7 +9,7 @@ It explains every setting, JWT secret generation, frontend/backend setup, and wh
 
 ## Quick start
 
-Requires **Node.js 24 LTS**, **npm 11**, Git, and a MongoDB database (Atlas or local).
+Requires **Node.js 20.1+ / 22.x / 24+**, **npm 9.6.4+**, Git, and a MongoDB database (Atlas or local). See [Node/npm compatibility](docs/NODE-VERSIONS.md).
 
 ```sh
 git clone https://github.com/theUsamaHub/mern-starter-kit.git
