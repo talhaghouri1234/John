@@ -111,6 +111,7 @@ export default function AuthForm({ mode }) {
               <ArrowRight size={16} />
             </button>
           </form>
+          {!isRegister && <p><Link to="/forgot-password">Forgot password?</Link></p>}
           <p className="auth-switch">
             {isRegister ? 'Already have an account?' : 'New around here?'}{' '}
             <Link to={isRegister ? '/login' : '/register'}>

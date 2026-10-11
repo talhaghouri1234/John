@@ -20,6 +20,8 @@ const ManageCategories = lazy(() => import('../pages/admin/ManageCategories.jsx'
 const ManageUsers = lazy(() => import('../pages/admin/ManageUsers.jsx'));
 const ManageMedia = lazy(() => import('../pages/admin/ManageMedia.jsx'));
 const BrowseMedia = lazy(() => import('../pages/user/BrowseMedia.jsx'));
+const AccountLink = lazy(() => import('../pages/public/AccountLink.jsx'));
+const ActivityLog = lazy(() => import('../pages/admin/ActivityLog.jsx'));
 
 export default function AppRoutes() {
   return (
@@ -29,6 +31,9 @@ export default function AppRoutes() {
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="forgot-password" element={<AccountLink key="forgot" mode="forgot" />} />
+          <Route path="reset-password" element={<AccountLink key="reset" mode="reset" />} />
+          <Route path="verify-email" element={<AccountLink key="verify" mode="verify" />} />
           <Route path="unauthorized" element={<Unauthorized />} />
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -40,6 +45,8 @@ export default function AppRoutes() {
               <Route path="categories" element={<ManageCategories />} />
               <Route path="users" element={<ManageUsers />} />
               <Route path="media" element={<ManageMedia />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="activity" element={<ActivityLog />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
