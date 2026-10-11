@@ -22,6 +22,7 @@ const schema = z.object({
     .pipe(z.array(frontendOrigin)),
   COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).optional(),
   MAIL_MODE: z.enum(['file', 'smtp', 'resend']).optional(),
+  MAIL_ENCRYPTION_KEY: z.string().min(32).optional(),
   RESEND_API_KEY: z.string().default(''),
   MAIL_FROM: z.string().email().default('noreply@example.com'),
   SMTP_HOST: z.string().default(''),

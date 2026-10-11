@@ -1,7 +1,7 @@
 import { test, expect, vi } from 'vitest';
 import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
 import { server } from './server.js';
@@ -9,6 +9,12 @@ import { AuthContext } from '../context/AuthContext.jsx';
 import AccountLink from '../pages/public/AccountLink.jsx';
 import Profile from '../pages/user/Profile.jsx';
 import ActivityLog from '../pages/admin/ActivityLog.jsx';
+import Login from '../pages/public/Login.jsx';
+
+function LocationIndicator() {
+  const location = useLocation();
+  return <span hidden data-testid="location">{location.pathname}{location.hash}</span>;
+}
 
 function renderAccount(component, path = '/', context = {}) {
   const auth = { user: null, clearSession: vi.fn(), updateUser: vi.fn(), ...context };
@@ -17,7 +23,10 @@ function renderAccount(component, path = '/', context = {}) {
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
     >
       <AuthContext.Provider value={auth}>
-        <MemoryRouter initialEntries={[path]}>{component}</MemoryRouter>
+        <MemoryRouter initialEntries={[path]}>
+          <Routes><Route path="/login" element={<Login />} /><Route path="*" element={component} /></Routes>
+          <LocationIndicator />
+        </MemoryRouter>
       </AuthContext.Provider>
     </QueryClientProvider>,
   );
@@ -66,9 +75,31 @@ test('reset requires matching passwords and sends the fragment token only after 
   await user.clear(screen.getByLabelText('Confirm new password'));
   await user.type(screen.getByLabelText('Confirm new password'), 'NewPassword123!');
   await user.click(screen.getByRole('button', { name: 'Reset password' }));
-  expect(await screen.findByRole('status')).toHaveTextContent('Password reset');
+  expect(await screen.findByRole('heading', { name: 'Welcome back.' })).toBeVisible();
+  expect(screen.getByRole('status')).toHaveTextContent('Password reset');
   expect(body).toEqual({ token, password: 'NewPassword123!' });
   expect(auth.clearSession).toHaveBeenCalled();
+  expect(screen.getByTestId('location')).toHaveTextContent(/^\/login$/);
+  expect(screen.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
+  expect(screen.queryByRole('heading', { name: 'Choose a new password' })).not.toBeInTheDocument();
+});
+
+test('password visibility controls toggle independently without submitting the reset form', async () => {
+  let requests = 0;
+  server.use(http.post('*/api/auth/reset-password', () => { requests++; return HttpResponse.json({}); }));
+  renderAccount(<AccountLink mode="reset" />, `/reset-password#token=${token}`);
+  const user = userEvent.setup();
+  const password = screen.getByLabelText('New password');
+  const confirmation = screen.getByLabelText('Confirm new password');
+  await user.type(password, 'Password123!');
+  await user.click(screen.getByRole('button', { name: 'Show new password' }));
+  expect(password).toHaveAttribute('type', 'text');
+  expect(confirmation).toHaveAttribute('type', 'password');
+  await user.click(screen.getByRole('button', { name: 'Hide new password' }));
+  expect(password).toHaveAttribute('type', 'password');
+  await user.click(screen.getByRole('button', { name: 'Show confirm new password' }));
+  expect(confirmation).toHaveAttribute('type', 'text');
+  expect(requests).toBe(0);
 });
 
 test('email verification is explicit and shows expired-link errors', async () => {

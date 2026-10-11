@@ -688,3 +688,8 @@ have an **Activity log**. The login page includes **Forgot password?**.
 Read [ACCOUNT-FEATURES.md](ACCOUNT-FEATURES.md) for a step-by-step local email
 preview walkthrough and a file map. Development defaults to a private local
 `mail-outbox` directory; no email provider is necessary to try the flows.
+
+Local email troubleshooting: SMTP credentials alone do not enable inbox delivery.
+Set `MAIL_MODE=smtp`, configure a provider-approved `MAIL_FROM`, and restart the
+backend. See [ACCOUNT-FEATURES.md](ACCOUNT-FEATURES.md#troubleshooting-local-email-october-2026-fix)
+for queue encryption errors, delivery diagnostics, and fresh-link recovery.
