@@ -20,3 +20,8 @@ process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-with-at-least-32-character
 process.env.CLIENT_URL = 'http://localhost:5173';
 process.env.CLIENT_ORIGINS = '';
 delete process.env.COOKIE_SAME_SITE;
+delete process.env.MAIL_MODE;
+process.env.SMTP_HOST = 'smtp.example.test';
+process.env.SMTP_USER = '';
+process.env.SMTP_PASS = '';
+process.env.MAIL_FROM = 'noreply@example.test';
