@@ -83,7 +83,7 @@ Render free web services block the common SMTP ports 25, 465, and 587. Use this 
 - Failed jobs with five attempts remain until expiry for inspection. Logs contain a generic error, not addresses, passwords, or reset links.
 - After correcting provider settings, users can request a new link. Requests for the same account have a one-minute cooldown.
 - SMTP delivery is at-least-once: a process crash after provider acceptance can result in a duplicate message. The link itself still works only once. Resend uses idempotency keys to reduce duplicates.
-- Email bodies are encrypted in MongoDB using AES-256-GCM with a key derived from `JWT_REFRESH_SECRET`. Rotating that secret invalidates sessions and makes existing queued email unreadable. After rotation, clear only obsolete email jobs through your normal database maintenance process and request new links; do not seed or erase users.
+- Email bodies are encrypted in MongoDB using AES-256-GCM with a key derived from `MAIL_ENCRYPTION_KEY`, falling back to `JWT_REFRESH_SECRET` when omitted. Keep the mail key stable. Rotating the effective key makes existing queued email unreadable; request new links and let expired jobs age out. Do not seed or erase users.
 - This starter does not implement provider bounce webhooks or a mail administration UI. Check delivery status with your provider when diagnosing missing emails.
 
 ## How each feature behaves
@@ -199,3 +199,50 @@ Paths below are relative to the combined repository. In separate repositories, r
 The rate limiters use memory per server process. For multiple replicas, use a shared rate-limit store and configure Express's proxy trust for your actual hosting topology; do not blindly trust all forwarded headers.
 
 Automated tests use disposable MongoDB instances and mocked mail delivery, never real inboxes or your configured database. Real provider delivery and hosted browser checks require your deployment credentials. The implementation follows the [OWASP account recovery guidance](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html) for expiring, one-use recovery links and generic public responses.
+
+## Troubleshooting local email (October 2026 fix)
+
+Adding SMTP credentials does not automatically change development out of file
+mode. For delivery to a real inbox, explicitly configure the backend:
+
+```dotenv
+NODE_ENV=development
+MAIL_MODE=smtp
+MAIL_FROM=your-provider-approved-sender@example.com
+SMTP_HOST=your-provider-smtp-host
+SMTP_PORT=587
+SMTP_USER=your-provider-username
+SMTP_PASS=your-provider-password-or-app-password
+```
+
+Restart the backend after changing `.env`. Check the startup message for
+`Email mode=smtp`. Request a fresh verification/reset link and wait for delivery.
+A successful SMTP connection check validates network access, TLS, and login;
+it does not guarantee sender acceptance or inbox delivery. Check spam and the
+provider's delivery logs if needed.
+
+The reported local failure had two causes: the active mode was `file`, despite
+SMTP credentials being present, and old encrypted queue messages could no longer
+be decoded with the current key. The previous log incorrectly called all failures
+provider errors. Workers now report safe, specific error categories, stop retrying
+unreadable messages, and correctly say when retries are exhausted. Message bodies,
+addresses, and credentials are never printed in failure logs.
+
+Set `MAIL_ENCRYPTION_KEY` to a stable secret of at least 32 characters to decouple
+queued mail from JWT-secret rotation. To introduce this setting without changing
+the existing encryption key, initially use your existing `JWT_REFRESH_SECRET`
+value privately. Without this setting, the old derivation remains compatible.
+Do not paste either value into Git, screenshots, or frontend settings.
+
+New queue jobs carry a non-secret key identifier. Updated workers do not claim
+jobs belonging to another key. Legacy unreadable jobs are retained until expiry
+and marked failed if encountered; they cannot be recovered by retrying SMTP.
+Request new links instead. Jobs already exhausted before the update also require
+a new request. No user records or queue messages need to be deleted to fix this.
+Use different databases for production and local development, and do not run old
+and new queue workers against the same database during an upgrade.
+
+Error codes include `EMAIL_DECRYPTION_FAILED` (key mismatch or damaged payload),
+`EAUTH` (SMTP credentials), `ETIMEDOUT` (network/port), `EENVELOPE` (sender or
+recipient rejection), and local filesystem permission errors. File mode explicitly
+reports where previews are saved and does not send to real inboxes.
