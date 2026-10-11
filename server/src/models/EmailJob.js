@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 
 const schema = new mongoose.Schema({
   payload: { type: String, required: true, select: false },
+  keyId: { type: String, index: true },
+  failedAt: Date,
+  lastErrorCode: String,
   attempts: { type: Number, default: 0 },
   availableAt: { type: Date, default: Date.now },
   leaseUntil: { type: Date, default: () => new Date(0) },

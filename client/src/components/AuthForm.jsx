@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight, Layers3, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useAuth from '../hooks/useAuth.js';
@@ -25,6 +25,7 @@ export default function AuthForm({ mode }) {
   const isRegister = mode === 'register';
   const auth = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     register,
     handleSubmit,
@@ -70,6 +71,12 @@ export default function AuthForm({ mode }) {
             {isRegister ? 'Make room for what’s next' : 'Your workspace awaits'}
           </span>
           <h2>{isRegister ? 'Create your account' : 'Welcome back.'}</h2>
+          {!isRegister && location.state?.accountNotice === 'password-reset' && (
+            <p className="recovery-notice" role="status">Password reset successfully. Sign in with your new password.</p>
+          )}
+          {!isRegister && location.state?.accountNotice === 'email-changed' && (
+            <p className="recovery-notice" role="status">Email updated. Sign in with your new email address.</p>
+          )}
           <p className="muted">
             {isRegister
               ? 'A fresh start, with everything in its place.'
