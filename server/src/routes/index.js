@@ -3,9 +3,18 @@ import authRoutes from './auth.js';
 import userRoutes from './user.js';
 import categoryRoutes from './category.js';
 import mediaRoutes from './media.js';
+import accountRoutes from './account.js';
+import { protect } from '../middleware/auth.js';
+import { authorize } from '../middleware/role.js';
+import validate from '../middleware/validate.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import { listAudit } from '../controllers/account.js';
+import { auditSchema } from '../validators/account.js';
 
 const router = Router();
 router.use('/auth', authRoutes);
+router.use('/account', accountRoutes);
+router.get('/audit', protect, authorize('admin'), validate(auditSchema), asyncHandler(listAudit));
 router.use('/users', userRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/media', mediaRoutes);
