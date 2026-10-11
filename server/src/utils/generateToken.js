@@ -6,11 +6,12 @@ export const hashToken = (token) => createHash('sha256').update(token).digest('h
 export const cookieOptions = { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: env.COOKIE_SAME_SITE, path: '/' };
 const duration = (value) => Number(value.slice(0, -1)) * { s: 1000, m: 60000, h: 3600000, d: 86400000 }[value.slice(-1)];
 
-export function generateTokens(user) {
+export function generateTokens(user, sessionId) {
   const common = { subject: String(user._id), issuer: 'mern-api', audience: 'mern-client', algorithm: 'HS256' };
+  const session = { sid: String(sessionId), version: user.authVersion || 0 };
   return {
-    accessToken: jwt.sign({ type: 'access' }, env.JWT_ACCESS_SECRET, { ...common, expiresIn: env.JWT_ACCESS_EXPIRES }),
-    refreshToken: jwt.sign({ type: 'refresh' }, env.JWT_REFRESH_SECRET, { ...common, jwtid: randomUUID(), expiresIn: env.JWT_REFRESH_EXPIRES }),
+    accessToken: jwt.sign({ ...session, type: 'access' }, env.JWT_ACCESS_SECRET, { ...common, expiresIn: env.JWT_ACCESS_EXPIRES }),
+    refreshToken: jwt.sign({ ...session, type: 'refresh' }, env.JWT_REFRESH_SECRET, { ...common, jwtid: randomUUID(), expiresIn: env.JWT_REFRESH_EXPIRES }),
   };
 }
 

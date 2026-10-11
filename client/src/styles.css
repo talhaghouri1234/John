@@ -1552,3 +1552,21 @@ td.actions button {
     max-width: none;
   }
 }
+
+/* Account lifecycle pages share the dashboard colors and spacing. */
+.recovery-shell { max-width: 620px; margin: 4rem auto; padding: 0 1rem; }
+.account-section { padding: 1.5rem; margin-bottom: 1.5rem; }
+.account-section h2 { margin-bottom: .75rem; }
+.account-section p { margin: .75rem 0; }
+.account-section form { margin-top: 1rem; }
+.account-section .field { margin-bottom: 1rem; }
+.account-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.account-grid .account-section { margin: 0 0 1.5rem; }
+.account-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.profile-photo { width: 88px; height: 88px; object-fit: cover; border-radius: 50%; }
+.account-section input[type="file"] { display: block; width: 100%; margin: 1rem 0; }
+.session-list { list-style: none; padding: 0; }
+.session-list li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+.session-list li div { min-width: 0; overflow-wrap: anywhere; }
+.session-list button { flex-shrink: 0; }
+@media (max-width: 760px) { .account-grid { grid-template-columns: 1fr; gap: 0; } .session-list li { align-items: flex-start; flex-direction: column; } }

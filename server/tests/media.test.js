@@ -88,3 +88,23 @@ test('failed database insert cleans file and storage failure keeps metadata for 
   remove.mockRestore();
   expect(await Media.findById(created.body.media._id)).not.toBeNull();
 });
+
+test('profile photos support users and admins, remain private, reject forged files and clean up replacements', async () => {
+  const { agent } = await session('user');
+  const { agent: admin } = await session('admin');
+  const before = (await readdir(root)).length;
+  expect((await request(app).get('/api/account/avatar')).status).toBe(401);
+  expect((await agent.post('/api/account/avatar').attach('file', Buffer.from('fake'), 'bad.png')).status).toBe(415);
+  expect((await agent.post('/api/account/avatar').attach('file', Buffer.alloc(2 * 1024 * 1024 + 1), 'big.png')).status).toBe(413);
+  const uploadPhoto = () => agent.post('/api/account/avatar').attach('file', png, 'photo.png');
+  const created = await uploadPhoto();
+  expect(created.status).toBe(200);
+  expect(created.body.user.hasAvatar).toBe(true);
+  expect(created.body.user.avatar).toBeUndefined();
+  expect((await admin.get('/api/account/avatar')).status).toBe(404);
+  expect((await agent.get('/api/account/avatar')).headers['content-type']).toContain('image/png');
+  await uploadPhoto();
+  expect((await readdir(root)).length).toBe(before + 1);
+  expect((await agent.delete('/api/account/avatar')).body.user.hasAvatar).toBe(false);
+  expect((await readdir(root)).length).toBe(before);
+});

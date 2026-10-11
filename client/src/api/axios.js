@@ -25,7 +25,7 @@ api.interceptors.response.use(
       error.response?.status !== 401 ||
       !request ||
       request._retried ||
-      /\/auth\/(login|register|refresh|logout)$/.test(request.url)
+      /\/auth\/(login|register|refresh|logout|forgot-password|reset-password|verify-email)$/.test(request.url)
     ) {
       return Promise.reject(error);
     }

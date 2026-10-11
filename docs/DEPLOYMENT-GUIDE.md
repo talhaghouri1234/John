@@ -442,3 +442,17 @@ Last good backend commit:
 ```
 
 Related references: [Beginner guide](BEGINNER-GUIDE.md), [Node/npm compatibility](NODE-VERSIONS.md), and [media storage](media-storage.md).
+
+## Required account-feature upgrade configuration
+
+Before deploying this release, configure production email delivery as described
+in [ACCOUNT-FEATURES.md](ACCOUNT-FEATURES.md). Set `MAIL_MODE=smtp` with SMTP
+settings, or `MAIL_MODE=resend` with `RESEND_API_KEY`, plus a verified `MAIL_FROM`.
+Render free services block ordinary SMTP ports; use the HTTPS option there.
+Production refuses file mode or incomplete mail configuration at startup.
+
+Deploy client and server together. Existing cookies are invalidated by the new
+session model, so users sign in again once. Do not reseed the database. Preserve
+uploads, which now also hold private profile photos. Configure SPA fallback for
+`/forgot-password`, `/reset-password`, and `/verify-email`. Verify real delivery
+and the full recovery flow with your provider on staging before inviting users.

@@ -17,6 +17,8 @@ test('admin can manage users and disabled access takes effect immediately', asyn
   expect(list.body.pagination.total).toBe(2);
   expect(list.body.users.every((item) => item.password === undefined)).toBe(true);
   expect((await agent.patch(`/api/users/${user.id}/role`).send({ role: 'admin' })).status).toBe(200);
+  expect((await userAgent.get('/api/users')).status).toBe(401);
+  await userAgent.post('/api/auth/login').send({ email: user.email, password: 'Password123!' });
   expect((await userAgent.get('/api/users')).status).toBe(200);
   expect((await agent.patch(`/api/users/${user.id}/active`).send({ isActive: false })).status).toBe(200);
   expect((await userAgent.get('/api/auth/me')).status).toBe(401);

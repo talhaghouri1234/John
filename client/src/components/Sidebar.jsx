@@ -8,6 +8,7 @@ import {
   ArrowUpRight,
   LogOut,
   Images,
+  History,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth.js';
 import toast from 'react-hot-toast';
@@ -21,7 +22,8 @@ export default function Sidebar() {
     ['dashboard', 'Overview', LayoutDashboard],
     ['categories', 'Categories', FolderOpen],
     ['media', 'Media library', Images],
-    ...(admin ? [['users', 'Team members', Users]] : [['profile', 'My profile', UserRound]]),
+    ...(admin ? [['users', 'Team members', Users], ['activity', 'Activity log', History]] : []),
+    ['profile', 'Account settings', UserRound],
   ];
   return (
     <aside className="sidebar" data-lenis-prevent>

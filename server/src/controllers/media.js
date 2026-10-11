@@ -3,6 +3,7 @@ import { inspectMedia } from '../middleware/upload.js';
 import { storageFor, uploadProvider } from '../storage/index.js';
 import ApiError from '../utils/ApiError.js';
 import escapeRegex from '../utils/escapeRegex.js';
+import { audit } from '../utils/audit.js';
 
 export async function listMedia(req, res) {
   const { page, limit, search, kind } = req.query;
@@ -28,6 +29,7 @@ export async function createMedia(req, res) {
     throw error;
   }
   const result = media.toObject();
+  await audit(req, 'media.upload', media._id, { kind: media.kind });
   delete result.key; delete result.provider;
   res.status(201).json({ success: true, media: result });
 }
@@ -46,5 +48,6 @@ export async function deleteMedia(req, res) {
   // Keep metadata on storage failure so deletion can be retried.
   await storageFor(media.provider).remove(media.key);
   await media.deleteOne();
+  await audit(req, 'media.delete', media._id);
   res.json({ success: true, message: 'Media deleted' });
 }
