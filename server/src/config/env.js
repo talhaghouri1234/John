@@ -21,7 +21,8 @@ const schema = z.object({
   CLIENT_ORIGINS: z.string().default('').transform((value) => value.trim() ? value.split(',') : [])
     .pipe(z.array(frontendOrigin)),
   COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).optional(),
-  MAIL_MODE: z.enum(['file', 'smtp']).optional(),
+  MAIL_MODE: z.enum(['file', 'smtp', 'resend']).optional(),
+  RESEND_API_KEY: z.string().default(''),
   MAIL_FROM: z.string().email().default('noreply@example.com'),
   SMTP_HOST: z.string().default(''),
   SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
@@ -40,9 +41,10 @@ export function loadEnv(source = process.env) {
   }
   const config = result.data;
   config.MAIL_MODE ??= config.NODE_ENV === 'production' ? 'smtp' : 'file';
-  if (config.NODE_ENV === 'production' && config.MAIL_MODE !== 'smtp') {
-    throw new Error('Invalid environment: production requires MAIL_MODE=smtp');
+  if (config.NODE_ENV === 'production' && config.MAIL_MODE === 'file') {
+    throw new Error('Invalid environment: production requires MAIL_MODE=smtp or resend');
   }
+  if (config.MAIL_MODE === 'resend' && !config.RESEND_API_KEY) throw new Error('Invalid environment: RESEND_API_KEY is required');
   if (config.MAIL_MODE === 'smtp' && (!config.SMTP_HOST || (!!config.SMTP_USER !== !!config.SMTP_PASS))) {
     throw new Error('Invalid environment: configure SMTP_HOST and matching SMTP_USER/SMTP_PASS');
   }

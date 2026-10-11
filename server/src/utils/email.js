@@ -22,11 +22,20 @@ export async function queueEmail(to, subject, text, expiresAt = new Date(Date.no
 }
 let transporter;
 export const emailDelivery = {
-  async send(message) {
+  async send(message, id) {
     if (env.MAIL_MODE === 'file') {
       const directory = fileURLToPath(new URL('../../mail-outbox/', import.meta.url));
       await mkdir(directory, { recursive: true });
       await writeFile(`${directory}/${randomUUID()}.json`, JSON.stringify(message, null, 2), { mode: 0o600, flag: 'wx' });
+      return;
+    }
+    if (env.MAIL_MODE === 'resend') {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST', signal: AbortSignal.timeout(20000),
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `account-email/${id}` },
+        body: JSON.stringify({ from: env.MAIL_FROM, ...message }),
+      });
+      if (!response.ok) throw new Error('Email provider rejected the request');
       return;
     }
     transporter ??= nodemailer.createTransport({
@@ -47,11 +56,11 @@ export async function deliverNextEmail() {
   { returnDocument: 'after', sort: { createdAt: 1 } }).select('+payload');
   if (!job) return false;
   try {
-    await emailDelivery.send(decodeEmail(job.payload));
+    await emailDelivery.send(decodeEmail(job.payload), job.id);
     await job.deleteOne();
   } catch {
     // Never log message bodies, recipient addresses, SMTP passwords, or recovery tokens.
-    console.error('Email delivery failed; inspect SMTP settings. Queued retry will follow (up to 5 attempts).');
+    console.error('Email delivery failed; inspect mail provider settings. Queued retry will follow (up to 5 attempts).');
     await EmailJob.updateOne({ _id: job._id }, { $set: {
       availableAt: new Date(Date.now() + 30000 * 2 ** job.attempts), leaseUntil: new Date(0),
     } });
