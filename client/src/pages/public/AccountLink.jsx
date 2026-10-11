@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircle2, LockKeyhole } from 'lucide-react';
 import PasswordField from '../../components/PasswordField.jsx';
@@ -15,6 +15,37 @@ export default function AccountLink({ mode }) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [email, setEmail] = useState('');
+  const [resendAt, setResendAt] = useState(0);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  useEffect(() => {
+    if (!resendAt) return;
+    const tick = () => setSecondsLeft(Math.max(0, Math.ceil((resendAt - Date.now()) / 1000)));
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [resendAt]);
+  const startCooldown = (seconds = 60) => {
+    setSecondsLeft(seconds);
+    setResendAt(Date.now() + seconds * 1000);
+  };
+  const resend = async () => {
+    if (busy || secondsLeft > 0) return;
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const result = await accountApi.forgot({ email });
+      setMessage(result.message);
+      startCooldown();
+    } catch (err) {
+      setError(errorMessage(err));
+      if (err.response?.status === 429) {
+        const retryAfter = Number(err.response.headers?.['retry-after']);
+        startCooldown(Number.isFinite(retryAfter) && retryAfter > 0 ? Math.ceil(retryAfter) : 60);
+      }
+    } finally { setBusy(false); }
+  };
   const token = new URLSearchParams(location.hash.slice(1)).get('token') || '';
   const validLink = /^[a-f0-9]{64}$/.test(token);
   const title = done
@@ -51,6 +82,10 @@ export default function AccountLink({ mode }) {
       }
       setMessage(result.message);
       setDone(true);
+      if (mode === 'forgot') {
+        setEmail(data.get('email').trim());
+        startCooldown();
+      }
       if (mode === 'verify' && auth.user)
         authApi
           .me()
@@ -139,7 +174,12 @@ export default function AccountLink({ mode }) {
           !done && <p role="alert">This link is missing or invalid. Request a new email.</p>
         )}
         <nav className="recovery-actions" aria-label="Account recovery options">
-          <Link className={`button ${done ? '' : 'secondary'}`} to="/login">
+          {mode === 'forgot' && done && (
+            <button type="button" className="button" disabled={busy || secondsLeft > 0} onClick={resend}>
+              {busy ? 'Sending…' : secondsLeft > 0 ? `Resend reset link in ${secondsLeft}s` : 'Resend reset link'}
+            </button>
+          )}
+          <Link className={`button ${done && mode !== 'forgot' ? '' : 'secondary'}`} to="/login">
             Back to sign in
           </Link>
           {mode === 'reset' && (
@@ -150,9 +190,11 @@ export default function AccountLink({ mode }) {
           {mode === 'forgot' && done && (
             <button
               className="button secondary"
+              disabled={busy}
               onClick={() => {
                 setDone(false);
                 setMessage('');
+                setError('');
               }}
             >
               Try another email
