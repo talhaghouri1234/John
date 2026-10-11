@@ -50,6 +50,14 @@ export function AuthProvider({ children }) {
         login: (values) => authenticate('login', values),
         register: (values) => authenticate('register', values),
         logout,
+        updateUser: (current) => {
+          setUser(current);
+          queryClient.setQueryData(['auth', 'me'], current);
+        },
+        clearSession: () => {
+          setUser(null);
+          queryClient.clear();
+        },
       }}
     >
       {children}
