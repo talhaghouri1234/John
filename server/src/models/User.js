@@ -8,12 +8,25 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['admin', 'user'], default: 'user' },
   isActive: { type: Boolean, default: true },
   refreshTokenHash: { type: String, select: false },
+  authVersion: { type: Number, default: 0, select: false },
+  emailVerified: { type: Boolean, default: false },
+  pendingEmail: { type: String, select: false },
+  resetHash: { type: String, select: false },
+  resetExpires: { type: Date, select: false },
+  resetSentAt: { type: Date, select: false },
+  verificationHash: { type: String, select: false },
+  verificationExpires: { type: Date, select: false },
+  verificationSentAt: { type: Date, select: false },
+  avatar: { type: Object, select: false },
+  hasAvatar: { type: Boolean, default: false },
 }, {
   timestamps: true,
   toJSON: {
     transform: (_doc, ret) => {
       delete ret.password;
       delete ret.refreshTokenHash;
+      for (const key of ['authVersion', 'pendingEmail', 'resetHash', 'resetExpires', 'resetSentAt',
+        'verificationHash', 'verificationExpires', 'verificationSentAt', 'avatar']) delete ret[key];
       delete ret.__v;
       return ret;
     },
