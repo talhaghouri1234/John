@@ -246,3 +246,10 @@ Error codes include `EMAIL_DECRYPTION_FAILED` (key mismatch or damaged payload),
 `EAUTH` (SMTP credentials), `ETIMEDOUT` (network/port), `EENVELOPE` (sender or
 recipient rejection), and local filesystem permission errors. File mode explicitly
 reports where previews are saved and does not send to real inboxes.
+
+### Recovery screen experience
+
+Password reset fields have independent, accessible Show/Hide controls. Recovery
+navigation uses styled buttons, and successful reset replaces the reset URL with
+`/login` (without the token), showing a confirmation above the sign-in form.
+Errors keep the form available so the user can retry or request a new link.
