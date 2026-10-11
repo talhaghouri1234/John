@@ -12,7 +12,8 @@ export const accountApi = {
   sessions: async () => (await api.get('/account/sessions')).data.sessions,
   revoke: async (id) => (await api.delete(`/account/sessions/${id}`)).data,
   revokeOthers: async () => (await api.delete('/account/sessions/others')).data,
-  avatar: async (signal) => (await api.get('/account/avatar', { responseType: 'blob', signal })).data,
+  avatar: async (signal) =>
+    (await api.get('/account/avatar', { responseType: 'blob', signal })).data,
   uploadAvatar: async (file) => {
     const body = new FormData();
     body.append('file', file);
