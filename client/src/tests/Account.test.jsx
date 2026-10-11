@@ -55,6 +55,30 @@ test('forgot password submits email and shows the generic confirmation', async (
   await user.click(screen.getByRole('button', { name: 'Send reset link' }));
   expect(await screen.findByRole('status')).toHaveTextContent('If eligible');
   expect(body).toEqual({ email: account.email });
+  expect(screen.getByRole('button', { name: /Resend reset link in/ })).toBeDisabled();
+});
+
+test('resend reuses the submitted email, handles failure, and restarts its cooldown on success', async () => {
+  const bodies = [];
+  server.use(http.post('*/api/auth/forgot-password', async ({ request }) => {
+    bodies.push(await request.json());
+    return bodies.length === 2
+      ? HttpResponse.json({ message: 'Please try again' }, { status: 503 })
+      : HttpResponse.json({ message: 'If eligible, check your inbox.' });
+  }));
+  renderAccount(<AccountLink mode="forgot" />);
+  const user = userEvent.setup();
+  await user.type(screen.getByLabelText('Email address'), account.email);
+  await user.click(screen.getByRole('button', { name: 'Send reset link' }));
+  expect(await screen.findByRole('button', { name: /Resend reset link in/ })).toBeDisabled();
+  vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 61000);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Resend reset link' })).toBeEnabled(), { timeout: 2500 });
+  await user.click(screen.getByRole('button', { name: 'Resend reset link' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Please try again');
+  await user.click(screen.getByRole('button', { name: 'Resend reset link' }));
+  expect(await screen.findByRole('button', { name: /Resend reset link in/ })).toBeDisabled();
+  expect(bodies).toEqual(Array(3).fill({ email: account.email }));
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
 
 test('reset requires matching passwords and sends the fragment token only after submission', async () => {

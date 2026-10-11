@@ -253,3 +253,10 @@ Password reset fields have independent, accessible Show/Hide controls. Recovery
 navigation uses styled buttons, and successful reset replaces the reset URL with
 `/login` (without the token), showing a confirmation above the sign-in form.
 Errors keep the form available so the user can retry or request a new link.
+
+After requesting a password-reset email, the confirmation screen includes **Resend
+reset link**. It remembers the submitted address and enables resending after a
+60-second countdown. A successful resend starts another cooldown; failed requests
+show an error and can be retried. **Try another email** remains available. The
+backend's account and IP rate limits still apply; resending does not confirm that
+an address is registered.
