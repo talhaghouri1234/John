@@ -162,3 +162,10 @@ See [the complete deployment guide](DEPLOYMENT-GUIDE.md) for hosting, storage, f
 - Combined project on Node 24.20.0/npm 11: backend 53 tests passed; frontend 23 tests passed; both linters and frontend build passed.
 - Independent projects on Node 20.1.0/npm 9.6.4: backend 53 tests passed; frontend 23 tests passed; both linters and frontend build passed.
 - These are local automated results, including production cookie configuration in an isolated backend suite. No hosted cross-site browser deployment or third-party-cookie-blocking browser matrix was executed.
+
+## Account-feature release
+
+The browser origin, custom header, and cookie rules in this document still apply
+to recovery, verification, profile, and device-session endpoints. This release
+also requires mail-provider configuration in production and a one-time sign-in
+after upgrading. See [ACCOUNT-FEATURES.md](ACCOUNT-FEATURES.md).

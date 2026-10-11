@@ -678,3 +678,13 @@ and `git status` → commit source files → push your branch.
 **Remember:** keep database credentials and JWT secrets in `server/.env`, leave
 frontend `VITE_API_URL=/api` for normal local development, and do not reseed or
 regenerate keys every time you run the app.
+
+## Account features and email delivery
+
+Open **Account settings** in either dashboard to update your name/photo/email,
+change your password, verify your email, or sign out other devices. Admins also
+have an **Activity log**. The login page includes **Forgot password?**.
+
+Read [ACCOUNT-FEATURES.md](ACCOUNT-FEATURES.md) for a step-by-step local email
+preview walkthrough and a file map. Development defaults to a private local
+`mail-outbox` directory; no email provider is necessary to try the flows.

@@ -263,3 +263,13 @@ the critical findings. Recheck advisories when updating the development toolchai
   installed binary via `MONGOMS_SYSTEM_BINARY` or let the download finish and cache.
 - **Test runner cannot open localhost sockets or temporary files:** run tests in an
   environment that permits local processes and loopback connections.
+
+## Account recovery, settings, and activity history
+
+The kit now includes forgot/reset password, email verification, password changes,
+profile editing and photos, independent device sessions, and admin activity logs.
+See [ACCOUNT-FEATURES.md](docs/ACCOUNT-FEATURES.md) for local email previews,
+SMTP/HTTPS email setup, API routes, and upgrade instructions.
+
+Production now requires a configured mail provider. Existing users must sign in
+again after upgrading to the new session model; no database reseeding is needed.
