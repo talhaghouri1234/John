@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { CheckCircle2, LockKeyhole } from 'lucide-react';
+import PasswordField from '../../components/PasswordField.jsx';
 import { accountApi } from '../../api/account.api.js';
 import { errorMessage } from '../../api/axios.js';
 import useAuth from '../../hooks/useAuth.js';
@@ -7,6 +9,7 @@ import { authApi } from '../../api/auth.api.js';
 
 export default function AccountLink({ mode }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const auth = useAuth();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -14,8 +17,11 @@ export default function AccountLink({ mode }) {
   const [done, setDone] = useState(false);
   const token = new URLSearchParams(location.hash.slice(1)).get('token') || '';
   const validLink = /^[a-f0-9]{64}$/.test(token);
-  const title =
-    mode === 'forgot'
+  const title = done
+    ? mode === 'forgot'
+      ? 'Check your inbox'
+      : 'Email verified'
+    : mode === 'forgot'
       ? 'Forgot your password?'
       : mode === 'reset'
         ? 'Choose a new password'
@@ -35,10 +41,17 @@ export default function AccountLink({ mode }) {
           ? { email: data.get('email') }
           : { token, ...(mode === 'reset' ? { password: data.get('password') } : {}) },
       );
+      if (mode === 'reset' || result.signedOut) {
+        auth.clearSession();
+        navigate('/login', {
+          replace: true,
+          state: { accountNotice: mode === 'reset' ? 'password-reset' : 'email-changed' },
+        });
+        return;
+      }
       setMessage(result.message);
       setDone(true);
-      if (mode === 'reset' || result.signedOut) auth.clearSession();
-      else if (mode === 'verify' && auth.user)
+      if (mode === 'verify' && auth.user)
         authApi
           .me()
           .then(auth.updateUser)
@@ -51,14 +64,24 @@ export default function AccountLink({ mode }) {
   };
   return (
     <main className="recovery-shell">
-      <section className="card account-section">
+      <section className="card account-section recovery-card" aria-labelledby="recovery-title">
+        <div className="recovery-icon" aria-hidden="true">
+          {done ? <CheckCircle2 size={26} /> : <LockKeyhole size={26} />}
+        </div>
         <p className="eyebrow">Account security</p>
-        <h1>{title}</h1>
-        {mode === 'forgot' && (
+        <h1 id="recovery-title">{title}</h1>
+        {!done && mode === 'forgot' && (
           <p>Enter your account email and we will send a link to reset your password.</p>
         )}
-        {mode === 'verify' && <p>Press the button below to confirm your email address.</p>}
-        {message && <p role="status">{message}</p>}
+        {!done && mode === 'verify' && <p>Press the button below to confirm your email address.</p>}
+        {!done && mode === 'reset' && validLink && (
+          <p id="password-help">Use 8–72 characters. Choose a password you do not use elsewhere.</p>
+        )}
+        {message && (
+          <p className="recovery-notice" role="status">
+            {message}
+          </p>
+        )}
         {error && (
           <p className="field-error" role="alert">
             {error}
@@ -81,33 +104,28 @@ export default function AccountLink({ mode }) {
             )}
             {mode === 'reset' && (
               <>
-                <div className="field">
-                  <label htmlFor="new-password">New password</label>
-                  <input
-                    id="new-password"
-                    name="password"
-                    type="password"
-                    autoComplete="new-password"
-                    minLength={8}
-                    maxLength={72}
-                    required
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="confirm-password">Confirm new password</label>
-                  <input
-                    id="confirm-password"
-                    name="confirm"
-                    type="password"
-                    autoComplete="new-password"
-                    minLength={8}
-                    maxLength={72}
-                    required
-                  />
-                </div>
+                <PasswordField
+                  label="New password"
+                  id="new-password"
+                  name="password"
+                  aria-describedby="password-help"
+                  autoComplete="new-password"
+                  minLength={8}
+                  maxLength={72}
+                  required
+                />
+                <PasswordField
+                  label="Confirm new password"
+                  id="confirm-password"
+                  name="confirm"
+                  autoComplete="new-password"
+                  minLength={8}
+                  maxLength={72}
+                  required
+                />
               </>
             )}
-            <button className="button" disabled={busy}>
+            <button className="button recovery-submit" disabled={busy}>
               {busy
                 ? 'Please wait…'
                 : mode === 'forgot'
@@ -120,10 +138,27 @@ export default function AccountLink({ mode }) {
         ) : (
           !done && <p role="alert">This link is missing or invalid. Request a new email.</p>
         )}
-        <p>
-          <Link to="/login">Back to sign in</Link> ·{' '}
-          <Link to="/forgot-password">Request a reset link</Link>
-        </p>
+        <nav className="recovery-actions" aria-label="Account recovery options">
+          <Link className={`button ${done ? '' : 'secondary'}`} to="/login">
+            Back to sign in
+          </Link>
+          {mode === 'reset' && (
+            <Link className="button secondary" to="/forgot-password">
+              Request a new reset link
+            </Link>
+          )}
+          {mode === 'forgot' && done && (
+            <button
+              className="button secondary"
+              onClick={() => {
+                setDone(false);
+                setMessage('');
+              }}
+            >
+              Try another email
+            </button>
+          )}
+        </nav>
         {mode === 'verify' && (
           <p>To request another verification email, sign in and open Account settings.</p>
         )}
