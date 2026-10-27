@@ -10,13 +10,16 @@ const Login = lazy(() => import('../pages/public/Login.jsx'));
 const Register = lazy(() => import('../pages/public/Register.jsx'));
 const NotFound = lazy(() => import('../pages/public/NotFound.jsx'));
 const Unauthorized = lazy(() => import('../pages/public/Unauthorized.jsx'));
+const RestaurantMenu = lazy(() => import('../pages/public/RestaurantMenu.jsx'));
 const UserLayout = lazy(() => import('../layouts/UserLayout.jsx'));
 const UserDashboard = lazy(() => import('../pages/user/UserDashboard.jsx'));
 const BrowseCategories = lazy(() => import('../pages/user/BrowseCategories.jsx'));
+const BrowseFoods = lazy(() => import('../pages/user/BrowseFoods.jsx'));
 const Profile = lazy(() => import('../pages/user/Profile.jsx'));
 const AdminLayout = lazy(() => import('../layouts/AdminLayout.jsx'));
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard.jsx'));
 const ManageCategories = lazy(() => import('../pages/admin/ManageCategories.jsx'));
+const ManageFoods = lazy(() => import('../pages/admin/ManageFoods.jsx'));
 const ManageUsers = lazy(() => import('../pages/admin/ManageUsers.jsx'));
 const ManageMedia = lazy(() => import('../pages/admin/ManageMedia.jsx'));
 const BrowseMedia = lazy(() => import('../pages/user/BrowseMedia.jsx'));
@@ -29,6 +32,7 @@ export default function AppRoutes() {
       <Routes>
         <Route element={<PublicLayout />}>
           <Route index element={<Home />} />
+          <Route path="menu" element={<RestaurantMenu />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<AccountLink key="forgot" mode="forgot" />} />
@@ -43,6 +47,7 @@ export default function AppRoutes() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="categories" element={<ManageCategories />} />
+              <Route path="foods" element={<ManageFoods />} />
               <Route path="users" element={<ManageUsers />} />
               <Route path="media" element={<ManageMedia />} />
               <Route path="profile" element={<Profile />} />
@@ -54,6 +59,7 @@ export default function AppRoutes() {
             <Route path="user" element={<UserLayout />}>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<UserDashboard />} />
+              <Route path="foods" element={<BrowseFoods />} />
               <Route path="categories" element={<BrowseCategories />} />
               <Route path="profile" element={<Profile />} />
               <Route path="media" element={<BrowseMedia />} />

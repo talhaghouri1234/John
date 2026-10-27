@@ -4,13 +4,33 @@ import { idParams, paginationQuery } from './user.js';
 const fields = {
   name: z.string().trim().min(2).max(100),
   description: z.string().trim().max(2000),
-  image: z.union([z.literal(''), z.string().url().refine((v) => /^https?:\/\//.test(v), 'Use an HTTP or HTTPS URL')]),
+  image: z.union([
+    z.literal(''),
+    z.string().trim().refine((v) => !v || v.startsWith('/') || /^https?:\/\//.test(v), 'Use an HTTP or HTTPS URL or upload an image'),
+  ]),
   isActive: z.boolean(),
 };
-export const createCategorySchema = z.object({ body: z.object({ ...fields, description: fields.description.default(''), image: fields.image.default(''), isActive: fields.isActive.default(true) }).strict() });
-export const updateCategorySchema = z.object({ params: idParams, body: z.object(fields).partial().strict().refine((v) => Object.keys(v).length > 0, 'At least one field is required') });
+
+export const createCategorySchema = z.object({
+  body: z.object({
+    ...fields,
+    description: fields.description.default(''),
+    image: fields.image.default(''),
+    isActive: fields.isActive.default(true),
+  }).strict(),
+});
+
+export const updateCategorySchema = z.object({
+  params: idParams,
+  body: z.object(fields).partial().strict().refine((v) => Object.keys(v).length > 0, 'At least one field is required'),
+});
+
 export const deleteCategorySchema = z.object({ params: idParams });
-export const listCategoriesSchema = z.object({ query: paginationQuery.extend({
-  sort: z.enum(['name', '-name', 'createdAt', '-createdAt']).default('-createdAt'),
-  isActive: z.enum(['true', 'false']).transform((v) => v === 'true').optional(),
-}).strict() });
+
+export const listCategoriesSchema = z.object({
+  query: paginationQuery.extend({
+    sort: z.enum(['name', '-name', 'createdAt', '-createdAt']).default('-createdAt'),
+    isActive: z.enum(['true', 'false']).transform((v) => v === 'true').optional(),
+    all: z.enum(['true', 'false']).transform((v) => v === 'true').optional(),
+  }).strict(),
+});

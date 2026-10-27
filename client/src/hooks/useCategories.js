@@ -1,10 +1,10 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { categoryApi } from '../api/category.api.js';
 
-export const useCategories = (params) =>
+export const useCategories = (params, publicMenu = false) =>
   useQuery({
-    queryKey: ['categories', params],
-    queryFn: () => categoryApi.list(params),
+    queryKey: ['categories', params, publicMenu],
+    queryFn: () => publicMenu ? categoryApi.menu(params) : categoryApi.list(params),
     placeholderData: keepPreviousData,
   });
 export function useCategoryMutation(method) {

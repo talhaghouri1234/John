@@ -38,3 +38,21 @@ test('editing a category preserves initial fields and submits the selected statu
   await user.click(screen.getByRole('button', { name: 'Cancel' }));
   expect(cancel).toHaveBeenCalledOnce();
 });
+
+test('uploading a category photo submits multipart data and waits for saving', async () => {
+  URL.createObjectURL = vi.fn(() => 'blob:category-preview');
+  URL.revokeObjectURL = vi.fn();
+  let finish;
+  const submit = vi.fn(() => new Promise((resolve) => { finish = resolve; }));
+  const user = userEvent.setup();
+  render(<CategoryForm initialValues={{ name: 'Starters' }} onSubmit={submit} onCancel={() => {}} />);
+  const file = new File(['photo'], 'starter.png', { type: 'image/png' });
+  await user.upload(document.getElementById('category-file-upload'), file);
+  await user.click(screen.getByRole('button', { name: 'Save category' }));
+  await waitFor(() => expect(submit).toHaveBeenCalledOnce());
+  expect(submit.mock.calls[0][0]).toBeInstanceOf(FormData);
+  expect(submit.mock.calls[0][0].get('image')).toBe(file);
+  expect(screen.getByRole('button', { name: 'Saving…' })).toBeDisabled();
+  finish();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Save category' })).toBeEnabled());
+});

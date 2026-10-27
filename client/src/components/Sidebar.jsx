@@ -2,6 +2,7 @@ import { NavLink, Link } from 'react-router-dom';
 import {
   Layers3,
   LayoutDashboard,
+  UtensilsCrossed,
   FolderOpen,
   Users,
   UserRound,
@@ -20,6 +21,7 @@ export default function Sidebar() {
   const root = admin ? '/admin' : '/user';
   const links = [
     ['dashboard', 'Overview', LayoutDashboard],
+    ['foods', 'Food Items', UtensilsCrossed],
     ['categories', 'Categories', FolderOpen],
     ['media', 'Media library', Images],
     ...(admin ? [['users', 'Team members', Users], ['activity', 'Activity log', History]] : []),
@@ -36,11 +38,11 @@ export default function Sidebar() {
       <div className="workspace-label">
         <span className="workspace-icon">F</span>
         <div>
-          My workspace<small>{admin ? 'Administrator' : 'Personal account'}</small>
+          Restaurant System<small>{admin ? 'Administrator' : 'Staff / User'}</small>
         </div>
         <span className="badge">{admin ? 'ADMIN' : 'USER'}</span>
       </div>
-      <p className="eyebrow">Workspace</p>
+      <p className="eyebrow">Menu Management</p>
       <nav aria-label="Workspace navigation">
         {links.map(([path, label, Icon]) => (
           <NavLink key={path} to={`${root}/${path}`}>
@@ -51,15 +53,15 @@ export default function Sidebar() {
       </nav>
       <div className="sidebar-bottom">
         <div className="sidebar-note">
-          <Layers3 size={20} />
-          <h3>Space to grow.</h3>
+          <UtensilsCrossed size={20} />
+          <h3>Restaurant Menu</h3>
           <p>
-            Everything in its place.
+            Culinary excellence in every dish.
             <br />
-            More room for what matters.
+            Manage dishes & categories.
           </p>
-          <Link to="/">
-            Explore Forma <ArrowUpRight size={14} />
+          <Link to="/menu">
+            Live food menu <ArrowUpRight size={14} />
           </Link>
         </div>
         <button

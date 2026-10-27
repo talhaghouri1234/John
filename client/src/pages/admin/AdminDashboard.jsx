@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import MediaLibrary from '../../components/MediaLibrary.jsx';
-import { Users, FolderOpen, CircleCheck, Archive, ArrowUpRight } from 'lucide-react';
+import { Users, FolderOpen, CircleCheck, ArrowUpRight, UtensilsCrossed } from 'lucide-react';
 import { userApi } from '../../api/user.api.js';
 import { useCategories } from '../../hooks/useCategories.js';
+import { useFoods } from '../../hooks/useFoods.js';
 import useAuth from '../../hooks/useAuth.js';
 import CategoryTable from '../../components/CategoryTable.jsx';
 import Loader from '../../components/Loader.jsx';
@@ -17,31 +18,42 @@ export default function AdminDashboard() {
   });
   const categories = useCategories({ limit: 5 });
   const active = useCategories({ limit: 1, isActive: true });
-  const requests = [users, categories, active];
+  const foods = useFoods({ limit: 5 });
+
+  const requests = [users, categories, active, foods];
   if (requests.some((query) => query.isPending)) return <Loader />;
   const failed = requests.find((query) => query.isError);
   if (failed) return <ErrorState error={failed.error} retry={failed.refetch} />;
+
   const total = categories.data.pagination.total;
   const activeCount = active.data.pagination.total;
+  const totalFoods = foods.data.pagination.total;
+
   const stats = [
-    ['Team members', users.data.pagination.total, Users, 'People in your workspace'],
-    ['Total categories', total, FolderOpen, 'Organized and ready'],
-    ['Active categories', activeCount, CircleCheck, 'Available to your team'],
-    ['Inactive categories', total - activeCount, Archive, 'Taking a little break'],
+    ['Food items', totalFoods, UtensilsCrossed, 'Dishes on your menu'],
+    ['Total categories', total, FolderOpen, 'Organized menu sections'],
+    ['Active categories', activeCount, CircleCheck, 'Live in restaurant'],
+    ['Team members', users.data.pagination.total, Users, 'Staff and administrators'],
   ];
+
   return (
     <>
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Your workspace, at a glance</p>
+          <p className="eyebrow">Restaurant System, at a glance</p>
           <h1>
             Welcome back, {user.name.split(' ')[0]} <span className="wave">✳</span>
           </h1>
-          <p>Here’s what’s happening in your workspace today.</p>
+          <p>Here’s what’s happening in your restaurant food menu system today.</p>
         </div>
-        <Link className="button" to="/admin/categories">
-          Manage categories <ArrowUpRight size={17} />
-        </Link>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <Link className="button" to="/admin/foods">
+            Manage food menu <UtensilsCrossed size={17} />
+          </Link>
+          <Link className="button secondary" to="/admin/categories">
+            Manage categories <ArrowUpRight size={17} />
+          </Link>
+        </div>
       </div>
       <div className="stats-grid">
         {stats.map(([label, count, Icon, detail]) => (
@@ -57,15 +69,15 @@ export default function AdminDashboard() {
       </div>
       <section className="workspace-banner">
         <div>
-          <p className="eyebrow">Clarity starts here</p>
+          <p className="eyebrow">Culinary Excellence</p>
           <h2>
-            A well-organized workspace.
-            <br />A little more room to think.
+            Restaurant Food Menu
+            <br />Management System.
           </h2>
-          <p>Keep your categories current and your team connected.</p>
+          <p>Keep your dishes fresh, prices accurate, and categories organized.</p>
         </div>
         <div className="banner-orbit">
-          <FolderOpen size={62} strokeWidth={1} />
+          <UtensilsCrossed size={62} strokeWidth={1} />
         </div>
       </section>
       <section className="card">

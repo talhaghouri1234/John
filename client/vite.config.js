@@ -4,7 +4,14 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  server: { port: 5173, strictPort: true, proxy: { '/api': 'http://localhost:5000' } },
+  server: {
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': 'http://localhost:5000',
+      '/uploads': 'http://localhost:5000',
+    },
+  },
   build: { rollupOptions: { output: { manualChunks: { motion: ['framer-motion'] } } } },
   test: {
     environment: 'jsdom',

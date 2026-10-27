@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Layers3, ArrowUpRight } from 'lucide-react';
+import { Layers3, ArrowUpRight, UtensilsCrossed } from 'lucide-react';
 
 export default function Navbar() {
   return (
@@ -11,6 +11,9 @@ export default function Navbar() {
         forma<span className="brand-dot">®</span>
       </Link>
       <nav aria-label="Main navigation">
+        <Link to="/menu" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+          <UtensilsCrossed size={16} /> Food Menu
+        </Link>
         <Link to="/login">Sign in</Link>
         <Link className="button small" to="/register">
           Get started <ArrowUpRight size={16} />

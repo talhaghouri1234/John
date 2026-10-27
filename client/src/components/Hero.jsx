@@ -1,52 +1,52 @@
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, FolderOpen, Layers3, CircleCheck, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Layers3, CircleCheck, Sparkles, UtensilsCrossed } from 'lucide-react';
 
 export default function Hero() {
   return (
     <section className="hero">
       <div className="hero-copy">
         <div className="hero-label">
-          <span className="status-dot" />A calmer kind of workspace
+          <span className="status-dot" />Restaurant Food Menu System
         </div>
         <h1>
-          Less scattered.
+          Fresh Flavors.
           <br />
-          More <em>together.</em>
+          Perfect <em>Order.</em>
         </h1>
         <p>
-          A thoughtful home for your team and everything you organize. Find clarity, make
-          connections, and give your best ideas room to grow.
+          A complete Restaurant Food Menu Management System built with MongoDB, Express.js, React.js, and Node.js.
+          Manage culinary categories, delicious dishes, and real-time menus with image uploads.
         </p>
-        <div className="hero-actions">
-          <Link className="button" to="/register">
-            Make yourself at home <ArrowUpRight size={17} />
+        <div className="hero-actions" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <Link className="button" to="/menu">
+            Explore Food Menu <UtensilsCrossed size={17} />
           </Link>
-          <Link className="text-link" to="/login">
-            Already a member? Sign in ↗
+          <Link className="button secondary" to="/login">
+            Manager Sign In <ArrowUpRight size={17} />
           </Link>
         </div>
         <div className="hero-note">
           <ShieldMark />
-          Secure accounts. Thoughtful permissions. Yours to build on.
+          JWT Authentication &bull; Multer Image Uploads &bull; Mongoose ODM
         </div>
       </div>
-      <div className="hero-visual" aria-label="An organized workspace illustration">
+      <div className="hero-visual" aria-label="Restaurant Food Menu Illustration">
         <div className="orbit orbit-one" />
         <div className="orbit orbit-two" />
         <div className="floating-note">
-          <Sparkles size={16} /> A little more clarity.
+          <Sparkles size={16} /> Freshly prepared daily.
         </div>
         <div className="demo-window">
           <div className="demo-top">
             <span className="brand">
               <Layers3 size={19} />
-              forma
+              forma bistro
             </span>
-            <span className="badge">YOUR WORKSPACE</span>
+            <span className="badge">FOOD MENU SYSTEM</span>
           </div>
           <div className="demo-heading">
-            <small>Good morning, Alex</small>
-            <h3>Everything in its place.</h3>
+            <small>Chef&apos;s Specials &bull; Today</small>
+            <h3>Culinary Menu Highlights</h3>
           </div>
           <div className="demo-stats">
             <div>
@@ -54,22 +54,22 @@ export default function Hero() {
               <strong>10</strong>
             </div>
             <div>
-              <span>Team members</span>
-              <strong>03</strong>
+              <span>Menu Dishes</span>
+              <strong>12+</strong>
             </div>
             <div>
-              <span>Possibilities</span>
-              <strong>∞</strong>
+              <span>Rating</span>
+              <strong>4.9★</strong>
             </div>
           </div>
           {[
-            ['Books & ideas', 'A world worth exploring', '#e8eedf'],
-            ['Home & living', 'Make room for the everyday', '#f1ece0'],
-            ['Creative essentials', 'For your next big thing', '#e6edef'],
+            ['Prime Ribeye Steak', '$29.99 • USDA Prime (12oz)', '#e8eedf'],
+            ['Wood-Fired Margherita', '$15.50 • Buffalo Mozzarella', '#f1ece0'],
+            ['Molten Chocolate Cake', '$9.50 • Belgian Dark Chocolate', '#e6edef'],
           ].map(([name, detail, color]) => (
             <div className="demo-row" key={name}>
               <span style={{ background: color }}>
-                <FolderOpen size={20} />
+                <UtensilsCrossed size={18} />
               </span>
               <div>
                 <strong>{name}</strong>
@@ -82,10 +82,10 @@ export default function Hero() {
         <div className="floating-check">
           <CircleCheck size={22} />
           <div>
-            All together now.<small>Your next chapter starts here.</small>
+            Ready to order.<small>Browse our full food menu.</small>
           </div>
         </div>
-        <span className="visual-caption">A PLACE FOR EVERYTHING THAT MATTERS</span>
+        <span className="visual-caption">RESTAURANT FOOD MENU MANAGEMENT</span>
       </div>
     </section>
   );
