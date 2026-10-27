@@ -14,8 +14,8 @@ See [Restaurant practical guide](docs/RESTAURANT-PRACTICAL.md) for the requireme
 Requires **Node.js 20.1+ / 22.x / 24+**, **npm 9.6.4+**, Git, and a MongoDB database (Atlas or local). See [Node/npm compatibility](docs/NODE-VERSIONS.md).
 
 ```sh
-git clone https://github.com/theUsamaHub/mern-starter-kit.git
-cd mern-starter-kit
+git clone https://github.com/theUsamaHub/mern-practical.git
+cd mern-practical
 npm run install:all
 ```
 

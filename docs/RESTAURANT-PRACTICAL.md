@@ -44,6 +44,6 @@ Automated API tests use disposable MongoDB and include multipart uploads, image 
 
 ## GitHub submission
 
-Repository: https://github.com/theUsamaHub/mern-starter-kit
+Repository: https://github.com/theUsamaHub/mern-practical
 
 Commit and push the completed source and this guide. Never commit `.env`, `node_modules`, or uploaded files. The seed recreates demo records; uploads are runtime data. Confirm the latest commit appears on GitHub before submitting the repository link.
